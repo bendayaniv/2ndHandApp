@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/add_TXT_productName"
@@ -12,8 +13,10 @@
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
         android:text="Product Name: "
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/add_EDT_productName"
@@ -25,7 +28,9 @@
         android:paddingStart="10dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/add_TXT_productPrice"
@@ -37,8 +42,9 @@
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
         android:text="Product Price: "
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/add_EDT_productPrice"
@@ -51,7 +57,9 @@
         android:paddingStart="10dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/add_TXT_productDescription"
@@ -63,8 +71,9 @@
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
         android:text="Product Description: "
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/add_EDT_productDescription"
@@ -75,7 +84,10 @@
         android:paddingStart="10dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        android:text="Add the product description here"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/add_TXT_productCategory"
@@ -87,8 +99,9 @@
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
         android:text="Product Category: "
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/add_TIL_productCategory"
@@ -99,13 +112,17 @@
         android:layout_toEndOf="@+id/add_TXT_productCategory"
         android:hint="@string/select_category"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold">
 
         <AutoCompleteTextView
             android:id="@+id/auto_complete_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="" />
+            android:inputType=""
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

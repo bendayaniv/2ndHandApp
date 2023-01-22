@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/singleProduct_IMG_image"
@@ -28,6 +29,7 @@
         android:maxLines="2"
         android:minLines="2"
         android:text="PRODUCT_NAME"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -42,6 +44,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="CATEGORY"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -56,6 +59,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="PRICE"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -72,6 +76,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="DESCRIPTION"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -85,7 +90,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:lines="10"
-        android:text="Write the product description here" />
+        android:text="Write the product description here"
+        android:textColor="@color/black" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/singleProduct_LBL_sellerDetails"
@@ -99,6 +105,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="SELLER_DETAILS"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -146,6 +153,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="DATE"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold" />
 

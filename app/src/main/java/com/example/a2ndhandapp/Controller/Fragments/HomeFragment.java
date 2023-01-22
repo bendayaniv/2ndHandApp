@@ -17,7 +17,7 @@ import com.example.a2ndhandapp.Interfaces.ProductCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
-import com.example.a2ndhandapp.Utils.DataManager;
+//import com.example.a2ndhandapp.Utils.DataManager;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -79,10 +79,10 @@ public class HomeFragment extends Fragment {
                     }
                     home_LST_products.getAdapter().notifyItemChanged(position);
                 }
-//                if (getProductCallback != null) {
-//                    Toast.makeText(getContext(), "Favorite clicked " + product.getName(), Toast.LENGTH_SHORT).show();
+                if (getProductCallback != null) {
+                    Toast.makeText(getContext(), "Favorite clicked " + product.getName(), Toast.LENGTH_SHORT).show();
 //                    getProductCallback.getProduct(product);
-//                }
+                }
             }
 
 

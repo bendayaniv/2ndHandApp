@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
+    android:backgroundTint="@color/white"
     android:elevation="8dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp">
@@ -45,6 +46,7 @@
             android:maxLines="2"
             android:minLines="2"
             android:text="PRODUCT_NAME"
+            android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -59,7 +61,9 @@
             android:maxLines="1"
             android:minLines="1"
             android:text="CATEGORY"
-            android:textSize="16sp" />
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_LBL_price"
@@ -72,7 +76,9 @@
             android:maxLines="1"
             android:minLines="1"
             android:text="PRICE"
-            android:textSize="16sp"/>
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <!--        <com.google.android.material.textview.MaterialTextView-->
         <!--            android:id="@+id/movie_LBL_reviews"-->
