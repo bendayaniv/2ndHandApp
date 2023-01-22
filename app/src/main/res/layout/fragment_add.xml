@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/add_TXT_productName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="Product Name: "
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/add_EDT_productName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/add_TXT_productName"
+        android:maxLines="1"
+        android:minLines="1"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp" />
+
+    <TextView
+        android:id="@+id/add_TXT_productPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_TXT_productName"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="Product Price: "
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/add_EDT_productPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_TXT_productName"
+        android:layout_toEndOf="@+id/add_TXT_productPrice"
+        android:maxLines="1"
+        android:minLines="1"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp" />
+
+    <TextView
+        android:id="@+id/add_TXT_productDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_TXT_productPrice"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="Product Description: "
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/add_EDT_productDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_TXT_productDescription"
+        android:lines="5"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp" />
+
+    <TextView
+        android:id="@+id/add_TXT_productCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_EDT_productDescription"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="Product Category: "
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_TIL_productCategory"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_EDT_productDescription"
+        android:layout_toEndOf="@+id/add_TXT_productCategory"
+        android:hint="@string/select_category"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp">
+
+        <AutoCompleteTextView
+            android:id="@+id/auto_complete_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    <Button-->
+    <!--        android:id="@+id/add_BTN_addPImg"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/add_TXT_productCategory"-->
+    <!--        android:paddingStart="10dp"-->
+    <!--        android:paddingTop="10dp"-->
+    <!--        android:paddingEnd="10dp"-->
+    <!--        android:paddingBottom="10dp"/>-->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_BTN_addProdImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_TXT_productCategory"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="20dp"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="Add Image"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/add_IMG_productImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/add_TIL_productCategory"
+        android:layout_marginStart="89dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toEndOf="@+id/add_BTN_addProdImg"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:scaleType="fitXY" />
+
+
+    <!--    <EditText-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/add_EDT_productDescription"-->
+    <!--        android:lines="5"/>-->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_BTN_addProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_IMG_productImage"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        android:text="Add"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>
