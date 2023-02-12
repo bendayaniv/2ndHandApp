@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.example.a2ndhandapp.Controller.Fragments.AddFragment;
@@ -22,10 +23,18 @@ import com.example.a2ndhandapp.Controller.Fragments.SearchFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SingleProductFragment;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.Models.Product;
+import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -103,9 +112,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            menu.findItem(R.id.nav_favorites).setVisible(false);
 //            menu.findItem(R.id.nav_my).setVisible(false);
 //        }
-
+//        saveToDB();
     }
 
+//    private void saveToDB() {
+//        ArrayList<String> categories = new ArrayList<>();
+//        categories.add("Electronics");
+//        categories.add("Clothes");
+//        categories.add("Shoes");
+//        categories.add("Accessories");
+//        categories.add("Home");
+//        categories.add("Toys");
+//        categories.add("Books");
+//        categories.add("Sports");
+//        Collections.sort(categories);
+//        categories.add("Other");
+//
+//        FirebaseDatabase db = FirebaseDatabase.getInstance();
+//
+//        DatabaseReference userRef = db.getReference("Categories");
+//        userRef.get();
+//        userRef.setValue(categories);
+//    }
+
+    /**
+     * Create all the fragments
+     */
     private void createFragments() {
         singleProductFragment = new SingleProductFragment();
         homeFragment = new HomeFragment();
@@ -120,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         addFragment.setGetProductCallback(getProductCallback);
     }
 
+    /**
+     * This method is called when we click on one of the items in the navigation view
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -155,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * This method is called when the back button is pressed
+     */
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) { // If the drawer is open

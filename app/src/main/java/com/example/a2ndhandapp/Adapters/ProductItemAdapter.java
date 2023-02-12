@@ -1,38 +1,40 @@
 package com.example.a2ndhandapp.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.a2ndhandapp.Interfaces.ProductCallback;
+import com.bumptech.glide.Glide;
+import com.example.a2ndhandapp.Interfaces.ProductItemCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
-import com.example.a2ndhandapp.Utils.ImageLoader;
+//import com.example.a2ndhandapp.Utils.ImageLoader;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
+public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.ProductViewHolder> {
 
     private Context context;
     private ArrayList<Product> products;
-    private ProductCallback productCallback;
+    private ProductItemCallback productCallback;
     private User currentUser;
 
-    public ProductAdapter(Context context, ArrayList<Product> products) {
+    public ProductItemAdapter(Context context, ArrayList<Product> products) {
         this.context = context;
         this.products = products;
     }
 
-    public ProductAdapter setProductCallback(ProductCallback productCallback) {
+    public ProductItemAdapter setProductItemCallback(ProductItemCallback productCallback) {
         this.productCallback = productCallback;
         return this;
     }
@@ -45,8 +47,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productViewHolder;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ProductAdapter.ProductViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProductItemAdapter.ProductViewHolder holder, int position) {
         Log.d("onBindViewHolder Position: ", "" + position);
         Product product = getItem(position);
 
@@ -66,6 +69,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 //            holder.product_IMG_favorite.setImageResource(R.drawable.white_heart);
 //        }
 //        ImageLoader.getInstance().load(product.getImages().get(0), holder.product_IMG_image);
+        Glide.
+                with(ProductItemAdapter.this.context)
+                .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
+                .placeholder(R.drawable.temporary_img)
+                .into(holder.product_IMG_image);
 //        holder.product_IMG_image.setImageResource(Integer.parseInt(product.getImages().get(0)));
     }
 
@@ -86,6 +94,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         private MaterialTextView product_LBL_price;
 
 //        private AppCompatImageView singleProduct_IMG_image;
+////        private AppCompatImageView singleProduct_IMG_favorite;
 //        private MaterialTextView singleProduct_LBL_name;
 //        private MaterialTextView singleProduct_LBL_category;
 //        private MaterialTextView singleProduct_LBL_price;
@@ -103,6 +112,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             product_LBL_price = itemView.findViewById(R.id.product_LBL_price);
 
 //            singleProduct_IMG_image = itemView.findViewById(R.id.singleProduct_IMG_image);
+////            singleProduct_IMG_favorite = itemView.findViewById(R.id.singleProduct_IMG_favorite);
 //            singleProduct_LBL_name = itemView.findViewById(R.id.singleProduct_LBL_name);
 //            singleProduct_LBL_category = itemView.findViewById(R.id.singleProduct_LBL_category);
 //            singleProduct_LBL_price = itemView.findViewById(R.id.singleProduct_LBL_price);
@@ -111,11 +121,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 //            singleProduct_LBL_sellerDetails = itemView.findViewById(R.id.singleProduct_LBL_sellerDetails);
 //            singleProduct_LBL_date = itemView.findViewById(R.id.singleProduct_LBL_date);
 
-            itemView.setOnClickListener(v -> productCallback.itemClicked(getItem(getAdapterPosition()),
-                    getAdapterPosition()));
+            itemView.setOnClickListener(v ->{
+                Toast.makeText(context, "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                productCallback.itemClicked(getItem(getAdapterPosition()),
+                    getAdapterPosition());
+            });
             product_IMG_favorite.setOnClickListener(v -> {
+                Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show();
                 productCallback.favoriteClicked(getItem(getAdapterPosition()), getAdapterPosition());
             });
+//            singleProduct_IMG_favorite.setOnClickListener(v -> {
+//                productCallback.favoriteClicked(getItem(getAdapterPosition()), getAdapterPosition());
+//            });
         }
     }
 }
