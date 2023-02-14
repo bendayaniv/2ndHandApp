@@ -6,48 +6,61 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <LinearLayout
-        android:id="@+id/home_linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/home_linearLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/home_search_category"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/select_category">
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/home_search_category"-->
+<!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:hint="@string/select_category"-->
+<!--            android:textColorHint="@color/black">-->
 
-            <AutoCompleteTextView
-                android:id="@+id/auto_complete_text_category"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+<!--            <AutoCompleteTextView-->
+<!--                android:id="@+id/auto_complete_text_category"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:inputType="none"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textStyle="bold" />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/home_search_price"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/select_price">
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/home_search_price"-->
+<!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:hint="@string/select_price"-->
+<!--            android:textColorHint="@color/black">-->
 
-            <AutoCompleteTextView
-                android:id="@+id/auto_complete_text_price"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+<!--            <AutoCompleteTextView-->
+<!--                android:id="@+id/auto_complete_text_price"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:inputType="none"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textStyle="bold" />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/home_LST_products"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@+id/home_linearLayout"-->
+<!--        android:weightSum="1"-->
+<!--        tools:listitem="@layout/product_item" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/home_LST_products"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/home_linearLayout"
         android:weightSum="1"
         tools:listitem="@layout/product_item" />
 

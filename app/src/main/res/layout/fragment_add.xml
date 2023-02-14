@@ -126,16 +126,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--    <Button-->
-    <!--        android:id="@+id/add_BTN_addPImg"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@+id/add_TXT_productCategory"-->
-    <!--        android:paddingStart="10dp"-->
-    <!--        android:paddingTop="10dp"-->
-    <!--        android:paddingEnd="10dp"-->
-    <!--        android:paddingBottom="10dp"/>-->
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_BTN_addProdImg"
         android:layout_width="wrap_content"
@@ -166,12 +156,6 @@
         android:paddingBottom="10dp"
         android:scaleType="fitXY" />
 
-
-    <!--    <EditText-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@+id/add_EDT_productDescription"-->
-    <!--        android:lines="5"/>-->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_BTN_addProduct"

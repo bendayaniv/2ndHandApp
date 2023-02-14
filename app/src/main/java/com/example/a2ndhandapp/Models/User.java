@@ -1,37 +1,23 @@
 package com.example.a2ndhandapp.Models;
 
+import com.example.a2ndhandapp.Utils.Database;
+
 import java.util.ArrayList;
 
 public class User {
     private String name;
     private String email;
-    private String phone;
     private String uid;
-    private ArrayList<Product> products;
-    private ArrayList<Product> favorites;
-    private String address;
-
-    public String getAddress() {
-        return address;
-    }
-
-    public User setAddress(String address) {
-        this.address = address;
-        return this;
-    }
-
-    private String city;
-    private String country;
-    private String phoneNum;
+    private ArrayList<Product> myProducts;
+    private ArrayList<Product> myFavorites;
 
 
     public User() {
     }
 
-    public User(String name, String email, String phone, String uid) {
+    public User(String name, String email, String uid) {
         this.name = name;
         this.email = email;
-        this.phone = phone;
         this.uid = uid;
     }
 
@@ -53,15 +39,6 @@ public class User {
         return this;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public User setPhone(String phone) {
-        this.phone = phone;
-        return this;
-    }
-
     public String getUid() {
         return uid;
     }
@@ -71,44 +48,72 @@ public class User {
         return this;
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+    public ArrayList<Product> getMyProducts() {
+        return myProducts;
     }
 
-    public User setProducts(ArrayList<Product> products) {
-        this.products = products;
+    public User setMyProducts(ArrayList<Product> myProducts) {
+        this.myProducts = myProducts;
         return this;
     }
 
     public User addProduct(Product product) {
-        if (this.products == null) {
-            this.products = new ArrayList<>();
+        if (this.myProducts == null) {
+            this.myProducts = new ArrayList<>();
         }
-        this.products.add(product);
+        this.myProducts.add(product);
         return this;
     }
 
-    public ArrayList<Product> getFavorites() {
-        return favorites;
+    public ArrayList<Product> getMyFavorites() {
+        return myFavorites;
     }
 
-    public User setFavorites(ArrayList<Product> favorites) {
-        this.favorites = favorites;
+    public User setMyFavorites(ArrayList<Product> myFavorites) {
+        this.myFavorites = myFavorites;
         return this;
     }
 
     public User addFavorite(Product product) {
-        if (this.favorites == null) {
-            this.favorites = new ArrayList<>();
+        if (this.myFavorites == null) {
+            this.myFavorites = new ArrayList<>();
         }
-        this.favorites.add(product);
+        this.myFavorites.add(product);
+        Database.getInstance().updateCurrentUser();
         return this;
     }
 
     public User removeFavorite(Product product) {
-        if (this.favorites != null) {
-            this.favorites.remove(product);
+        if (this.myFavorites != null) {
+            for (int i = 0; i < myFavorites.size(); i++) {
+                if (theSameProduct(product, i)) {
+//                    this.myFavorites.remove(i);
+                    this.myFavorites.remove(this.myFavorites.get(i));
+                    break;
+                }
+            }
         }
+        Database.getInstance().updateCurrentUser();
         return this;
+    }
+
+    public boolean isFavorite(Product product) {
+        if (this.myFavorites != null) {
+            for (int i = 0; i < myFavorites.size(); i++) {
+                if (theSameProduct(product, i))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean theSameProduct(Product product, int index) {
+        if (myFavorites.get(index).getCategory().equals(product.getCategory())
+                && myFavorites.get(index).getName().equals(product.getName())
+                && myFavorites.get(index).getPrice().equals(product.getPrice())
+                && myFavorites.get(index).getDescription().equals(product.getDescription())) {
+            return true;
+        }
+        return false;
     }
 }

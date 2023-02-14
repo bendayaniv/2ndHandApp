@@ -1,13 +1,21 @@
 package com.example.a2ndhandapp.Utils;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
+
+import java.util.ArrayList;
 
 public class CurrentUser {
 
     private static CurrentUser instance = null;
     private User user;
+    private String currentCategory;
+
+
+    private ArrayList<Product> currentShowingProducts = new ArrayList<>();
 
     private CurrentUser() {
     }
@@ -16,6 +24,7 @@ public class CurrentUser {
         if (instance == null) {
             instance = new CurrentUser();
         }
+        getInstance().setCurrentCategory("All");
     }
 
     public static CurrentUser getInstance() {
@@ -33,6 +42,28 @@ public class CurrentUser {
 
     public CurrentUser removeUser() {
         this.user = null;
+        setCurrentCategory("All");
+        return this;
+    }
+
+    /**
+     * The currentCategory is to know what to show on the home screen
+     */
+    public String getCurrentCategory() {
+        return currentCategory;
+    }
+
+    public CurrentUser setCurrentCategory(String currentCategory) {
+        this.currentCategory = currentCategory;
+        return this;
+    }
+
+    public ArrayList<Product> getCurrentShowingProducts() {
+        return currentShowingProducts;
+    }
+
+    public CurrentUser setCurrentShowingProducts(ArrayList<Product> currentShowingProducts) {
+        this.currentShowingProducts = currentShowingProducts;
         return this;
     }
 }

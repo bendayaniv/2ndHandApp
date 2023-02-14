@@ -21,8 +21,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.R;
+import com.example.a2ndhandapp.Utils.Database;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.ArrayList;
 
 public class AddFragment extends Fragment {
 
@@ -34,10 +37,7 @@ public class AddFragment extends Fragment {
     private ImageView add_IMG_productImage;
     private MaterialButton add_BTN_addProduct;
     private final int GALLERY_REQUEST_CODE = 1000;
-
-    private String[] items = {"Electronics", "Clothing", "Home", "Other", "a", "b", "c", "d", "e",
-            "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
-            "w", "x", "y", "z"};
+    private ArrayList<String> categories = new ArrayList<>();
     private AutoCompleteTextView auto_complete_text;
     private ArrayAdapter<String> adapterItems;
 
@@ -66,7 +66,8 @@ public class AddFragment extends Fragment {
             }
         });
 
-        adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, items);
+        categories = Database.getInstance().getCategories();
+        adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, categories);
 
         auto_complete_text.setAdapter(adapterItems);
         auto_complete_text.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,15 +83,13 @@ public class AddFragment extends Fragment {
             public void onClick(View v) {
                 String productName = add_EDT_productName.getText().toString();
                 String productPrice = add_EDT_productPrice.getText().toString();
-                String productDescription = add_EDT_productDescription.getText().toString();
+//                String productDescription = add_EDT_productDescription.getText().toString();
                 String productCategory = add_TIL_productCategory.getEditText().getText().toString();
-                String productImage = add_IMG_productImage.toString();
+//                String productImage = add_IMG_productImage.toString();
 
-                if (productName.isEmpty() || productPrice.isEmpty() /*|| productDescription.isEmpty()*/
-                        || productCategory.isEmpty() /*|| productImage.isEmpty()*/) {
+                if (productName.isEmpty() || productPrice.isEmpty() || productCategory.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
-//                } else if (productPrice.matches("^[0-9]*$") && productPrice.length() > 1) {
-                } else if (!productPrice.chars().allMatch(Character::isDigit) /*&& productPrice.length() > 1*/) {
+                } else if (!productPrice.chars().allMatch(Character::isDigit)) {
                     Toast.makeText(getContext(), "Price is only with numbers", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Product added successfully", Toast.LENGTH_SHORT).show();

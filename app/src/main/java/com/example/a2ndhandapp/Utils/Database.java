@@ -5,6 +5,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.a2ndhandapp.Models.Product;
+import com.example.a2ndhandapp.Models.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -14,11 +17,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class Database {
-    //    private FirebaseAuth mAuth;
     private static FirebaseDatabase firebaseDB;
+    private static FirebaseAuth mAuth;
     private static Database instance = null;
     private static ArrayList<String> categories = new ArrayList<>();
-    private static ArrayList<String> prices = new ArrayList<>();
+    private static ArrayList<Product> allProducts = new ArrayList<>();
+    private static ArrayList<User> allUsers = new ArrayList<>();
 
     public Database() {
 
@@ -31,39 +35,129 @@ public class Database {
         if (firebaseDB == null) {
             firebaseDB = FirebaseDatabase.getInstance();
         }
+        if (mAuth == null) {
+            mAuth = FirebaseAuth.getInstance();
+        }
+
+        // Need to start listening to the database here before we want to get the information
+        // from the database
+        startListeningToDB();
+
+    }
+
+    /**
+     * This method is used to read data from the database, and start listening to the database
+     */
+    private static void startListeningToDB() {
+        DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
+        getInstance().readStringALDataFromDB(categoriesRef, categories);
+
+        DatabaseReference usersRef = firebaseDB.getReference("Users");
+        getInstance().getAllUsersFromDB(usersRef);
+
+        DatabaseReference productsRef = firebaseDB.getReference("Products");
+        getInstance().readProductsFromDB(productsRef);
     }
 
     public static Database getInstance() {
         return instance;
     }
 
-    public static ArrayList<String> getCategories() {
+    public ArrayList<String> getCategories() {
         readData("Categories");
-        Log.d("firebase", "getCategories: " + categories);
         return categories;
     }
 
-    public static ArrayList<String> getPrices() {
-        readData("Prices");
-        return prices;
+    public ArrayList<Product> getAllProducts() {
+        readData("Products");
+        return allProducts;
     }
 
-    public static void readData(String opt) {
+    public ArrayList<User> getAllUsers() {
+        readData("AllUsers");
+        return allUsers;
+    }
+
+    public void readData(String opt) {
         switch (opt) {
             case "Categories":
                 DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
-                readDataFromDB(categoriesRef, categories);
+                readStringALDataFromDB(categoriesRef, categories);
                 break;
-            case "Prices":
-                DatabaseReference pricesRef = firebaseDB.getReference("Prices");
-                readDataFromDB(pricesRef, prices);
+            case "AllUsers":
+                DatabaseReference usersRef = firebaseDB.getReference("Users");
+                getAllUsersFromDB(usersRef);
+                break;
+            case "Products":
+                DatabaseReference productsRef = firebaseDB.getReference("Products");
+                readProductsFromDB(productsRef);
                 break;
             default:
                 break;
         }
     }
 
-    public static void readDataFromDB(DatabaseReference reference, ArrayList<String> list) {
+    private void readProductsFromDB(DatabaseReference productsRef) {
+        productsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allProducts.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Product product = ds.getValue(Product.class);
+                    // TODO - to handle with images
+                    allProducts.add(product);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("firebase", "Error getting data" + error.getMessage());
+            }
+        });
+    }
+
+    /**
+     * In case there is update that connects to a product
+     * For example - user delete one of his products, so we need to remove the product from all the
+     * users favorites lists and from his the specific user myProducts list
+     *
+     * @param usersRef
+     */
+    private void getAllUsersFromDB(DatabaseReference usersRef) {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allUsers.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    if (ds.child("Favorites").exists()) {
+                        ArrayList<Product> favorites = new ArrayList<>();
+                        for (DataSnapshot ds2 : ds.child("Favorites").getChildren()) {
+                            Product product = ds2.getValue(Product.class);
+                            favorites.add(product);
+                        }
+                        user.setMyFavorites(favorites);
+                    }
+                    if (ds.child("MyProducts").exists()) {
+                        ArrayList<Product> myProducts = new ArrayList<>();
+                        for (DataSnapshot ds2 : ds.child("MyProducts").getChildren()) {
+                            Product product = ds2.getValue(Product.class);
+                            myProducts.add(product);
+                        }
+                        user.setMyProducts(myProducts);
+                    }
+                    allUsers.add(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("firebase", "Error getting data" + error.getMessage());
+            }
+        });
+    }
+
+    public void readStringALDataFromDB(DatabaseReference reference, ArrayList<String> list) {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -78,23 +172,11 @@ public class Database {
                 Log.d("firebase", "Error getting data" + error.getMessage());
             }
         });
-
-
-
-
-//        reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DataSnapshot> task) {
-//                if (!task.isSuccessful()) {
-//                    Log.d("firebase", "Error getting data" + task.getException());
-//                } else {
-//                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-//                    for (DataSnapshot ds : task.getResult().getChildren()) {
-//                        list.add(ds.getValue().toString());
-//                    }
-//                }
-//            }
-//        });
     }
 
+    public void updateCurrentUser() {
+        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
+                .child(mAuth.getCurrentUser().getUid());
+        currentUserRef.setValue(CurrentUser.getInstance().getUser());
+    }
 }
