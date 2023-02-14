@@ -19,18 +19,29 @@
         android:scaleType="fitXY"
         android:src="@drawable/temporary_img" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/singleProduct_LBL_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+<!--    <com.google.android.material.textview.MaterialTextView-->
+<!--        android:id="@+id/singleProduct_LBL_close"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:clickable="true"-->
+<!--        android:contentDescription="icon"-->
+<!--        android:text="X"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="40sp"-->
+<!--        android:textStyle="bold" />-->
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/singleProduct_IMG_close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentTop="true"
-        android:clickable="true"
-        android:contentDescription="icon"
-        android:text="X"
-        android:textColor="@color/black"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/delete_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/singleProduct_LBL_name"

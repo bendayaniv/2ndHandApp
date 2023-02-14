@@ -21,7 +21,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 public class SingleProductFragment extends Fragment {
     private AppCompatImageView singleProduct_IMG_image;
-    private MaterialTextView singleProduct_LBL_close;
+    private AppCompatImageView singleProduct_IMG_close;
     private MaterialTextView singleProduct_LBL_name;
     private MaterialTextView singleProduct_LBL_category;
     private MaterialTextView singleProduct_LBL_price;
@@ -49,11 +49,15 @@ public class SingleProductFragment extends Fragment {
                     .placeholder(R.drawable.temporary_img)
                     .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
 
-            singleProduct_LBL_close.setOnClickListener(v -> {
+            singleProduct_IMG_close.setOnClickListener(v -> {
                 Toast.makeText(getContext(), "Close", Toast.LENGTH_SHORT).show();
+                // TODO - delete the product, and remove from the myList products of the user,
+                //  and to update the DB
             });
             if (CurrentUser.getInstance().getUser() == null) {
-                singleProduct_LBL_close.setVisibility(View.GONE);
+                // TODO - to check if this product belong to the current use,
+                //  and if it does, show the close button
+                singleProduct_IMG_close.setVisibility(View.GONE);
             }
 
             singleProduct_LBL_name.setText(currentProduct.getName());
@@ -65,7 +69,7 @@ public class SingleProductFragment extends Fragment {
 
     private void findViews(View view) {
         singleProduct_IMG_image = view.findViewById(R.id.singleProduct_IMG_image);
-        singleProduct_LBL_close = view.findViewById(R.id.singleProduct_LBL_close);
+        singleProduct_IMG_close = view.findViewById(R.id.singleProduct_IMG_close);
         singleProduct_LBL_name = view.findViewById(R.id.singleProduct_LBL_name);
         singleProduct_LBL_category = view.findViewById(R.id.singleProduct_LBL_category);
         singleProduct_LBL_price = view.findViewById(R.id.singleProduct_LBL_price);

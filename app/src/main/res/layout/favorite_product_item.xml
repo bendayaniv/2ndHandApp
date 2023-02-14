@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:backgroundTint="@color/white"
+    android:elevation="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/favoriteProduct_IMG_image"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/favoriteProduct_LBL_price"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/temporary_img" />
+
+        <!--        <androidx.appcompat.widget.AppCompatImageView-->
+        <!--            android:id="@+id/product_IMG_favorite"-->
+        <!--            android:layout_width="36dp"-->
+        <!--            android:layout_height="36dp"-->
+        <!--            android:layout_alignParentTop="true"-->
+        <!--            android:layout_alignParentEnd="true"-->
+        <!--            android:layout_marginTop="6dp"-->
+        <!--            android:layout_marginEnd="6dp"-->
+        <!--            android:scaleType="fitCenter"-->
+        <!--            android:src="@drawable/white_heart" />-->
+
+        <!--        <com.google.android.material.textview.MaterialTextView-->
+        <!--            android:id="@+id/product_LBL_name"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            android:layout_marginTop="8dp"-->
+        <!--            android:layout_marginEnd="8dp"-->
+        <!--            android:layout_toStartOf="@id/product_IMG_favorite"-->
+        <!--            android:layout_toEndOf="@id/product_IMG_image"-->
+        <!--            android:maxLines="2"-->
+        <!--            android:minLines="2"-->
+        <!--            android:text="PRODUCT_NAME"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:textSize="24sp"-->
+        <!--            android:textStyle="bold" />-->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/favoriteProduct_LBL_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toEndOf="@id/favoriteProduct_IMG_image"
+            android:maxLines="2"
+            android:minLines="2"
+            android:text="PRODUCT_NAME"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/product_LBL_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/favoriteProduct_LBL_name"
+            android:layout_alignStart="@id/favoriteProduct_LBL_name"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:minLines="1"
+            android:text="CATEGORY"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/favoriteProduct_LBL_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_LBL_category"
+            android:layout_alignStart="@id/favoriteProduct_LBL_name"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:minLines="1"
+            android:text="PRICE"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>
