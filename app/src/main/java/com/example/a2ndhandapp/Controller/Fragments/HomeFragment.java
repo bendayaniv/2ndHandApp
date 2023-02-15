@@ -77,6 +77,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
             }
+//            initProductRV();
         }
         CurrentUser.getInstance().setCurrentShowingProducts(products);
         initProductRV();
@@ -89,9 +90,16 @@ public class HomeFragment extends Fragment {
 
     private void initProductRV() {
 //        initProductsList();
+        Log.d("TAGTAGTAG", "1111111111111111111111111");
+        Log.d("TAGTAGTAG", "" + products.size());
+
+//        if (CurrentUser.getInstance().getUser() != null) {
+
         productAdapter = new ProductItemAdapter(getContext(), products);
+        Log.d("TAGTAGTAG", "2222222222222222222222");
         home_RV_products.setLayoutManager(new LinearLayoutManager(getContext()));
         home_RV_products.setAdapter(productAdapter);
+//        productAdapter.notifyDataSetChanged();
         productAdapter.setProductItemCallback(new ProductItemCallback() {
             @Override
             public void favoriteClicked(Product product, int position) {
@@ -113,6 +121,7 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+//        }
     }
 
     private void findViews(View view) {

@@ -59,7 +59,9 @@ public class CurrentUser {
     }
 
     /**
-     * This two methods are
+     * This two methods are for inform the main activity that if the next screen will show some
+     * products or not for the header
+     *
      * @return
      */
     public ArrayList<Product> getCurrentShowingProducts() {

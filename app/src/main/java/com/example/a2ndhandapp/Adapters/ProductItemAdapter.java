@@ -2,6 +2,7 @@ package com.example.a2ndhandapp.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,9 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     public ProductItemAdapter(Context context, ArrayList<Product> products) {
         this.context = context;
         this.products = products;
+//        notify();
+//        notifyDataSetChanged();
+        Log.d("TAGTAGTAGTAGTAG", "ProductItemAdapter: " + this.products.size());
     }
 
     public ProductItemAdapter setProductItemCallback(ProductItemCallback productCallback) {
@@ -39,7 +43,13 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // TODO - the problem is here - need somehow to update that the products list has changed
+//        Log.d("TAG123123123", "parent.getContext(): " + parent.getContext().);
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_item, parent, false);
+//        notifyDataSetChanged();
+//        parent.notify();
+        Log.d("TAG123123123", "onCreateViewHolder: " + products.size());
+        Log.d("TAG123123123", "onCreateViewHolder: " + CurrentUser.getInstance().getCurrentShowingProducts().size());
         ProductViewHolder productViewHolder = new ProductViewHolder(view);
         return productViewHolder;
     }
@@ -79,6 +89,12 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
         return products == null ? 0 : products.size();
     }
 
+    public int setProducts(ArrayList<Product> products) {
+        this.products = products;
+//        notifyDataSetChanged();
+        return products.size();
+    }
+
     private Product getItem(int position) {
         return products.get(position);
     }
@@ -90,8 +106,19 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
         private MaterialTextView product_LBL_category;
         private MaterialTextView product_LBL_price;
 
+//        this.products = CurrentUser.getInstance().getCurrentShowingProducts();
+
+
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
+
+
+            // TODO - the problem is here - he don't know on the first time the real size of the products list
+            Log.d("121212121212121212", "ProductViewHolder: " + getItemCount());
+//            itemView.
+            setProducts(CurrentUser.getInstance().getCurrentShowingProducts());
+            Log.d("121212121212121212", "ProductViewHolder: " + getItemCount());
+
             product_IMG_image = itemView.findViewById(R.id.product_IMG_image);
             product_IMG_favorite = itemView.findViewById(R.id.product_IMG_favorite);
             product_LBL_name = itemView.findViewById(R.id.product_LBL_name);
@@ -106,6 +133,7 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
             product_IMG_favorite.setOnClickListener(v -> {
                 Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show();
                 productCallback.favoriteClicked(getItem(getAdapterPosition()), getAdapterPosition());
+//                notifyDataSetChanged();
             });
         }
     }
