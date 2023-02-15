@@ -58,6 +58,13 @@ public class Product {
         return this;
     }
 
+    public boolean theSameProduct(Product product) {
+        return this.name.equals(product.getName()) &&
+                this.description.equals(product.getDescription()) &&
+                this.price.equals(product.getPrice()) &&
+                this.category.equals(product.getCategory());
+    }
+
     public ArrayList<String> getImages() {
         return images;
     }

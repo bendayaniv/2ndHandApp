@@ -60,7 +60,11 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
                 } else {
                     holder.product_IMG_favorite.setImageResource(R.drawable.white_heart);
                 }
-
+            }
+            if (CurrentUser.getInstance().getUser().getMyProducts() != null) {
+                if (CurrentUser.getInstance().getUser().isMyProduct(product)) {
+                    holder.product_IMG_favorite.setVisibility(View.GONE);
+                }
             }
         }
         Glide.

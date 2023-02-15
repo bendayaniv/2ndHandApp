@@ -7,11 +7,11 @@
     android:background="@color/white">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MY_RV_products"
+        android:id="@+id/my_RV_products"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="1"
-        tools:listitem="@layout/product_item" />
+        tools:listitem="@layout/my_product_item" />
 
 
 </RelativeLayout>

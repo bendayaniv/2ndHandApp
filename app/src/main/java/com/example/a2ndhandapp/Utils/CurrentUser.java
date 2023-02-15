@@ -58,6 +58,10 @@ public class CurrentUser {
         return this;
     }
 
+    /**
+     * This two methods are
+     * @return
+     */
     public ArrayList<Product> getCurrentShowingProducts() {
         return currentShowingProducts;
     }

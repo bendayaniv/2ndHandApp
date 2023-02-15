@@ -1,6 +1,7 @@
 package com.example.a2ndhandapp.Controller.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +20,14 @@ import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.example.a2ndhandapp.Utils.Database;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
     private ArrayList<String> categories = new ArrayList<>();
-    private RecyclerView home_LST_products;
+    private RecyclerView home_RV_products;
     private ProductItemAdapter productAdapter;
     private GetProductCallback getProductCallback;
-    private FirebaseAuth mAuth;
 
     private ArrayList<Product> products = new ArrayList<>();
 
@@ -42,7 +41,8 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
+        categories = Database.getInstance().getCategories();
+        products = Database.getInstance().getAllProducts();
 
         findViews(view);
 
@@ -56,29 +56,42 @@ public class HomeFragment extends Fragment {
      * searching
      */
     public void initProductsList() {
-        products = Database.getInstance().getAllProducts();
-        for (int i = products.size() - 1; i >= 0; i--) {
-            if (CurrentUser.getInstance().getCurrentCategory().equals("Other")) {
-                if (categories.contains(products.get(i).getCategory()))
-                    products.remove(i);
-            } else if (!CurrentUser.getInstance().getCurrentCategory().equals("All")) {
-                if (!products.get(i).getCategory().equals(CurrentUser.getInstance().getCurrentCategory())) {
-                    products.remove(i);
+        ArrayList<Product> myProducts = CurrentUser.getInstance().getUser().getMyProducts();
+        if (myProducts != null && !myProducts.isEmpty()
+                && products != null && !products.isEmpty()) {
+//            for (int i = products.size() - 1; i >= 0; i--) {
+//                for (int j = 0; j < myProducts.size(); j++) {
+//                    if (products.get(i).theSameProduct(myProducts.get(j))) {
+//                        products.remove(i);
+//                        break;
+//                    }
+//                }
+//            }
+            for (int i = products.size() - 1; i >= 0; i--) {
+                if (CurrentUser.getInstance().getCurrentCategory().equals("Other")) {
+                    if (categories.contains(products.get(i).getCategory()))
+                        products.remove(i);
+                } else if (!CurrentUser.getInstance().getCurrentCategory().equals("All")) {
+                    if (!products.get(i).getCategory().equals(CurrentUser.getInstance().getCurrentCategory())) {
+                        products.remove(i);
+                    }
                 }
             }
         }
         CurrentUser.getInstance().setCurrentShowingProducts(products);
+        initProductRV();
     }
 
     private void initViews() {
         initProductsList();
-        initProductRV();
+//        initProductRV();
     }
 
     private void initProductRV() {
+//        initProductsList();
         productAdapter = new ProductItemAdapter(getContext(), products);
-        home_LST_products.setLayoutManager(new LinearLayoutManager(getContext()));
-        home_LST_products.setAdapter(productAdapter);
+        home_RV_products.setLayoutManager(new LinearLayoutManager(getContext()));
+        home_RV_products.setAdapter(productAdapter);
         productAdapter.setProductItemCallback(new ProductItemCallback() {
             @Override
             public void favoriteClicked(Product product, int position) {
@@ -89,7 +102,7 @@ public class HomeFragment extends Fragment {
                     CurrentUser.getInstance().getUser().addFavorite(product);
                     Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
                 }
-                home_LST_products.getAdapter().notifyItemChanged(position);
+                home_RV_products.getAdapter().notifyItemChanged(position);
             }
 
             @Override
@@ -103,7 +116,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void findViews(View view) {
-        home_LST_products = view.findViewById(R.id.home_LST_products);
+        home_RV_products = view.findViewById(R.id.home_RV_products);
     }
 
 }

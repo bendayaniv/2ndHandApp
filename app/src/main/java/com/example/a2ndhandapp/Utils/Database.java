@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 public class Database {
     private static FirebaseDatabase firebaseDB;
-    private static FirebaseAuth mAuth;
     private static Database instance = null;
     private static ArrayList<String> categories = new ArrayList<>();
     private static ArrayList<Product> allProducts = new ArrayList<>();
@@ -35,28 +34,21 @@ public class Database {
         if (firebaseDB == null) {
             firebaseDB = FirebaseDatabase.getInstance();
         }
-        if (mAuth == null) {
-            mAuth = FirebaseAuth.getInstance();
-        }
 
         // Need to start listening to the database here before we want to get the information
         // from the database
         startListeningToDB();
-
     }
 
     /**
      * This method is used to read data from the database, and start listening to the database
      */
     private static void startListeningToDB() {
-        DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
-        getInstance().readStringALDataFromDB(categoriesRef, categories);
+        getInstance().getCategories();
 
-        DatabaseReference usersRef = firebaseDB.getReference("Users");
-        getInstance().getAllUsersFromDB(usersRef);
+        getInstance().getAllUsers();
 
-        DatabaseReference productsRef = firebaseDB.getReference("Products");
-        getInstance().readProductsFromDB(productsRef);
+        getInstance().getAllProducts();
     }
 
     public static Database getInstance() {
@@ -124,15 +116,16 @@ public class Database {
      * @param usersRef
      */
     private void getAllUsersFromDB(DatabaseReference usersRef) {
+
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allUsers.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     User user = ds.getValue(User.class);
-                    if (ds.child("Favorites").exists()) {
+                    if (ds.child("myFavorites").exists()) {
                         ArrayList<Product> favorites = new ArrayList<>();
-                        for (DataSnapshot ds2 : ds.child("Favorites").getChildren()) {
+                        for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
                             Product product = ds2.getValue(Product.class);
                             favorites.add(product);
                         }
@@ -174,9 +167,34 @@ public class Database {
         });
     }
 
-    public void updateCurrentUser() {
+    public void updateUser(User updatedUser) {
         DatabaseReference currentUserRef = firebaseDB.getReference("Users")
-                .child(mAuth.getCurrentUser().getUid());
-        currentUserRef.setValue(CurrentUser.getInstance().getUser());
+                .child(updatedUser.getUid());
+        currentUserRef.setValue(updatedUser);
+    }
+
+    public void removeProduct(Product deletedProduct) {
+        DatabaseReference productRef = firebaseDB.getReference("Products");
+        productRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allProducts.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Product product = ds.getValue(Product.class);
+                    // TODO - to handle with images
+                    if (deletedProduct.theSameProduct(product)) {
+                    } else {
+                        allProducts.add(product);
+                    }
+                }
+                productRef.setValue(allProducts);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("firebase", "Error getting data" + error.getMessage());
+            }
+        });
+
     }
 }

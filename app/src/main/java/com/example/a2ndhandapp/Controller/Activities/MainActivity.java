@@ -25,9 +25,11 @@ import com.example.a2ndhandapp.Controller.Fragments.SingleProductFragment;
 import com.example.a2ndhandapp.Interfaces.AfterLogInCallback;
 import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
+import com.example.a2ndhandapp.Interfaces.ThereIsProductsCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
+import com.example.a2ndhandapp.Utils.Database;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -35,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawer; // DrawerLayout is a ViewGroup that allows for interactive "drawer" views to be pulled out from one or both vertical edges of the window.
     private Toolbar toolbar; // Toolbar is a ViewGroup that displays a horizontal bar containing actions and views such as title and navigation buttons.
-
     private SingleProductFragment singleProductFragment;
     private HomeFragment homeFragment;
     private MyFragment myFragment;
@@ -58,14 +59,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void getProduct(Product product) {
             // TODO - send to "ProductFragment" the specific product
-//            Toast.makeText(MainActivity.this, "Description:  " + product.getDescription(), Toast.LENGTH_SHORT).show();
             if (singleProductFragment != null) {
                 singleProductFragment.setCurrentProduct(product);
+//                singleProductFragment.setCurrentProduct(Current);
                 getSupportActionBar().setTitle(product.getName()); // Set the title of the toolbar
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, singleProductFragment).commit(); // Set the slideshow fragment
             }
         }
 
+        // The thinking - to be able to go back
         @Override
         public void backToHome() {
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
@@ -92,6 +94,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory() + " - No Products to Show"); // Set the title of the toolbar
 
+            }
+        }
+    };
+
+    /**
+     * This method is in case that the user's both lists - favorites and my products are empty,
+     * so the user will be able to see a message that says that there are no products to show
+     */
+    ThereIsProductsCallback thereIsProductsCallback = new ThereIsProductsCallback() {
+        @Override
+        public void thereIsProducts() {
+            if (CurrentUser.getInstance().getCurrentShowingProducts().isEmpty()) {
+                getSupportActionBar().setTitle(getSupportActionBar().getTitle() + " - No Products to Show"); // Set the title of the toolbar
+            } else {
+                getSupportActionBar().setTitle(getSupportActionBar().getTitle()); // Set the title of the toolbar
             }
         }
     };
@@ -177,20 +194,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void createFragments() {
         singleProductFragment = new SingleProductFragment();
+
         homeFragment = new HomeFragment();
-        myFragment = new MyFragment();
-        favoritesFragment = new FavoritesFragment();
-        searchFragment = new SearchFragment();
-        addFragment = new AddFragment();
-        logInOutFragment = new LogInOutFragment();
-
         homeFragment.setGetProductCallback(getProductCallback);
-        myFragment.setGetProductCallback(getProductCallback);
-        favoritesFragment.setGetProductCallback(getProductCallback);
-        addFragment.setGetProductCallback(getProductCallback);
 
+        favoritesFragment = new FavoritesFragment();
+        favoritesFragment.setGetProductCallback(getProductCallback);
+
+        searchFragment = new SearchFragment();
         searchFragment.setCategoryCallback(categoryCallback);
 
+        myFragment = new MyFragment();
+        myFragment.setGetProductCallback(getProductCallback);
+        myFragment.setThereIsProductsCallback(thereIsProductsCallback);
+
+        addFragment = new AddFragment();
+        addFragment.setGetProductCallback(getProductCallback);
+
+        logInOutFragment = new LogInOutFragment();
         logInOutFragment.setAfterLogInCallback(afterLogInCallback);
     }
 

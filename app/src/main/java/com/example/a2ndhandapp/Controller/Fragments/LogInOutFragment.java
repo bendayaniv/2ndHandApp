@@ -77,7 +77,6 @@ public class LogInOutFragment extends Fragment {
     );
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
-        Log.d("TAGTAGTAGTAGTAGTAG", "77777777777777777777");
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             /**
              * This method will be invoked any time the data on the database changes.
@@ -97,7 +96,6 @@ public class LogInOutFragment extends Fragment {
                 } else {
                     alreadyIn();
                 }
-                Log.d("TAGTAGTAGTAGTAGTAG", "111111111111111111111");
                 CurrentUser.getInstance().setUser(newUser);
             }
 
@@ -132,7 +130,7 @@ public class LogInOutFragment extends Fragment {
      * <p>
      * //@param mDatabase
      */
-    private void alreadyIn(/*DatabaseReference mDatabase*/) {
+    private void alreadyIn() {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
 
                                                      @Override
@@ -151,10 +149,10 @@ public class LogInOutFragment extends Fragment {
                                                              }
                                                              newUser.setMyFavorites(favorites);
                                                          }
-                                                         if (snapshot.child("Users").child(mAuth.getCurrentUser().getUid()).child("MyProducts").exists()) {
+                                                         if (snapshot.child("Users").child(mAuth.getCurrentUser().getUid()).child("myProducts").exists()) {
                                                              ArrayList<Product> myProducts = new ArrayList<>();
                                                              for (DataSnapshot ds : snapshot.child("Users").child(mAuth
-                                                                     .getCurrentUser().getUid()).child("MyProducts").getChildren()) {
+                                                                     .getCurrentUser().getUid()).child("myProducts").getChildren()) {
                                                                  Product product = ds.getValue(Product.class);
                                                                  myProducts.add(product);
                                                              }

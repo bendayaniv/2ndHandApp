@@ -62,7 +62,35 @@ public class User {
             this.myProducts = new ArrayList<>();
         }
         this.myProducts.add(product);
+        // TODO - add product to database
+        Database.getInstance().updateUser(this);
         return this;
+    }
+
+    public User removeProduct(Product product) {
+        if (this.myProducts != null) {
+            for (int i = 0; i < myProducts.size(); i++) {
+//                if (theSameProduct(product, i)) {
+                if (this.myProducts.get(i).theSameProduct(product)) {
+                    this.myProducts.remove(this.myProducts.get(i));
+                    break;
+                }
+            }
+        }
+        // TODO - remove product from database
+        Database.getInstance().updateUser(this);
+        return this;
+    }
+
+    public boolean isMyProduct(Product product) {
+        if (this.myProducts != null) {
+            for (int i = 0; i < myProducts.size(); i++) {
+//                if (theSameProduct(product, i))
+                if (this.myProducts.get(i).theSameProduct(product))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public ArrayList<Product> getMyFavorites() {
@@ -79,41 +107,43 @@ public class User {
             this.myFavorites = new ArrayList<>();
         }
         this.myFavorites.add(product);
-        Database.getInstance().updateCurrentUser();
+        Database.getInstance().updateUser(this);
         return this;
     }
 
     public User removeFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
-                if (theSameProduct(product, i)) {
+//                if (theSameProduct(product, i)) {
+                if (this.myFavorites.get(i).theSameProduct(product)) {
 //                    this.myFavorites.remove(i);
                     this.myFavorites.remove(this.myFavorites.get(i));
                     break;
                 }
             }
         }
-        Database.getInstance().updateCurrentUser();
+        Database.getInstance().updateUser(this);
         return this;
     }
 
     public boolean isFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
-                if (theSameProduct(product, i))
+//                if (theSameProduct(product, i))
+                if (this.myFavorites.get(i).theSameProduct(product))
                     return true;
             }
         }
         return false;
     }
 
-    public boolean theSameProduct(Product product, int index) {
-        if (myFavorites.get(index).getCategory().equals(product.getCategory())
-                && myFavorites.get(index).getName().equals(product.getName())
-                && myFavorites.get(index).getPrice().equals(product.getPrice())
-                && myFavorites.get(index).getDescription().equals(product.getDescription())) {
-            return true;
-        }
-        return false;
-    }
+//    public boolean theSameProduct(Product product, int index) {
+//        if (myFavorites.get(index).getCategory().equals(product.getCategory())
+//                && myFavorites.get(index).getName().equals(product.getName())
+//                && myFavorites.get(index).getPrice().equals(product.getPrice())
+//                && myFavorites.get(index).getDescription().equals(product.getDescription())) {
+//            return true;
+//        }
+//        return false;
+//    }
 }
