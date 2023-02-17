@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,17 +22,14 @@ import com.example.a2ndhandapp.Controller.Fragments.LogInOutFragment;
 import com.example.a2ndhandapp.Controller.Fragments.MyFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SearchFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SingleProductFragment;
-import com.example.a2ndhandapp.Interfaces.AfterLogInCallback;
+import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
 import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
-import com.example.a2ndhandapp.Interfaces.ThereIsProductsCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void getProduct(Product product) {
             // TODO - send to "ProductFragment" the specific product
             if (singleProductFragment != null) {
+                Log.d("TAG123TAG123TAG123TAG123", "getProduct: " + product.getName());
                 singleProductFragment.setCurrentProduct(product);
 //                singleProductFragment.setCurrentProduct(Current);
                 getSupportActionBar().setTitle(product.getName()); // Set the title of the toolbar
@@ -89,37 +88,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             CurrentUser.getInstance().setCurrentCategory(category);
             navigationView.setCheckedItem(R.id.nav_home);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, homeFragment).commit(); // Set the home fragment
-            if (CurrentUser.getInstance().getCurrentShowingProducts().isEmpty()) {
-                getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
-            } else {
-                getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory() + " - No Products to Show"); // Set the title of the toolbar
-
-            }
-        }
-    };
-
-    /**
-     * This method is in case that the user's both lists - favorites and my products are empty,
-     * so the user will be able to see a message that says that there are no products to show
-     */
-    ThereIsProductsCallback thereIsProductsCallback = new ThereIsProductsCallback() {
-        @Override
-        public void thereIsProducts() {
-            if (CurrentUser.getInstance().getCurrentShowingProducts().isEmpty()) {
-                getSupportActionBar().setTitle(getSupportActionBar().getTitle() + " - No Products to Show"); // Set the title of the toolbar
-            } else {
-                getSupportActionBar().setTitle(getSupportActionBar().getTitle()); // Set the title of the toolbar
-            }
+//            if (CurrentUser.getInstance().getCurrentShowingProducts().isEmpty()) {
+            getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
+//            } else {
+//                getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory() + " - No Products to Show"); // Set the title of the toolbar
+//
+//            }
         }
     };
 
     /**
      * This callback is to inform the activity that the user has logged/signed in
      * and to start the splash activity
+     * It is for after the user has logged/signed in or deleted onw of his products
      */
-    AfterLogInCallback afterLogInCallback = new AfterLogInCallback() {
+    GoHomeCallback goHomeCallback = new GoHomeCallback() {
         @Override
-        public void afterLogIn() {
+        public void goHome() {
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
             finish();
         }
@@ -194,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void createFragments() {
         singleProductFragment = new SingleProductFragment();
+        singleProductFragment.setGoHomeCallback(goHomeCallback);
 
         homeFragment = new HomeFragment();
         homeFragment.setGetProductCallback(getProductCallback);
@@ -206,13 +192,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         myFragment = new MyFragment();
         myFragment.setGetProductCallback(getProductCallback);
-        myFragment.setThereIsProductsCallback(thereIsProductsCallback);
 
         addFragment = new AddFragment();
         addFragment.setGetProductCallback(getProductCallback);
 
         logInOutFragment = new LogInOutFragment();
-        logInOutFragment.setAfterLogInCallback(afterLogInCallback);
+        logInOutFragment.setGoHomeCallback(goHomeCallback);
     }
 
     /**
@@ -222,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_home:
+//                homeFragment.initProductsList();
                 navigationView.setCheckedItem(R.id.nav_home);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, homeFragment).commit(); // Set the home fragment
                 getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar

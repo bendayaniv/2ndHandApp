@@ -1,18 +1,15 @@
 package com.example.a2ndhandapp.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.a2ndhandapp.Interfaces.MyProductItemCallback;
 import com.example.a2ndhandapp.Interfaces.ProductItemCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
@@ -24,15 +21,15 @@ public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdap
 
     private Context context;
     private ArrayList<Product> products;
-    private MyProductItemCallback myProductCallback;
+    private ProductItemCallback myProductCallback;
 
     public MyProductItemAdapter(Context context, ArrayList<Product> products) {
         this.context = context;
         this.products = products;
     }
 
-    public MyProductItemAdapter setMyProductItemCallback(MyProductItemCallback myProductCallback) {
-        this.myProductCallback = myProductCallback;
+    public MyProductItemAdapter setProductItemCallback(ProductItemCallback productCallback) {
+        this.myProductCallback = productCallback;
         return this;
     }
 
@@ -70,7 +67,6 @@ public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdap
 
     public class MyProductViewHolder extends RecyclerView.ViewHolder {
         private AppCompatImageView myProduct_IMG_image;
-        private AppCompatImageView myProduct_IMG_delete;
         private MaterialTextView myProduct_LBL_name;
         private MaterialTextView myProduct_LBL_category;
         private MaterialTextView myProduct_LBL_price;
@@ -79,22 +75,13 @@ public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdap
         public MyProductViewHolder(@NonNull View itemView) {
             super(itemView);
             myProduct_IMG_image = itemView.findViewById(R.id.myProduct_IMG_image);
-            myProduct_IMG_delete = itemView.findViewById(R.id.myProduct_IMG_delete);
             myProduct_LBL_name = itemView.findViewById(R.id.myProduct_LBL_name);
             myProduct_LBL_category = itemView.findViewById(R.id.myProduct_LBL_category);
             myProduct_LBL_price = itemView.findViewById(R.id.myProduct_LBL_price);
 
             itemView.setOnClickListener(v -> {
-                Toast.makeText(context, "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                Log.d("asdadasdasd", "asdasd: " + getItem(getAdapterPosition()).getName());
                 myProductCallback.itemClicked(getItem(getAdapterPosition()),
                         getAdapterPosition());
-            });
-
-            myProduct_IMG_delete.setOnClickListener(v -> {
-                if (myProductCallback != null) {
-                    myProductCallback.deleteClicked(getItem(getAdapterPosition()), getAdapterPosition());
-                }
             });
 
 

@@ -21,13 +21,17 @@ import androidx.fragment.app.Fragment;
 
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.R;
-import com.example.a2ndhandapp.Utils.Database;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 public class AddFragment extends Fragment {
+
+    private FirebaseDatabase firebaseDB;
 
     private AppCompatEditText add_EDT_productName;
     private AppCompatEditText add_EDT_productPrice;
@@ -54,6 +58,10 @@ public class AddFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add, container, false);
 
+        firebaseDB = FirebaseDatabase.getInstance();
+        DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
+        getCategoriesFromDB(categoriesRef/*, categories*/);
+
         findViews(view);
 
 
@@ -66,7 +74,6 @@ public class AddFragment extends Fragment {
             }
         });
 
-        categories = Database.getInstance().getCategories();
         adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, categories);
 
         auto_complete_text.setAdapter(adapterItems);
@@ -135,5 +142,20 @@ public class AddFragment extends Fragment {
                 add_IMG_productImage.setImageURI(data.getData()); // set the image to the image view
             }
         }
+    }
+
+
+    public void getCategoriesFromDB(DatabaseReference reference/*, ArrayList<String> list*/) {
+        reference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot snapshot = task.getResult();
+                if (snapshot.exists()) {
+                    categories.clear();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        categories.add(ds.getValue().toString());
+                    }
+                }
+            }
+        });
     }
 }

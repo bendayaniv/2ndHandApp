@@ -2,7 +2,6 @@ package com.example.a2ndhandapp.Controller.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.a2ndhandapp.Interfaces.AfterLogInCallback;
+import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
@@ -38,11 +37,11 @@ public class LogInOutFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
     private DatabaseReference mDatabase;
-    private AfterLogInCallback afterLogInCallback;
-    private ArrayList<Product> products = new ArrayList<>();
+    private GoHomeCallback goHomeCallback;
+//    private ArrayList<Product> products = new ArrayList<>();
 
-    public void setAfterLogInCallback(AfterLogInCallback afterLogInCallback) {
-        this.afterLogInCallback = afterLogInCallback;
+    public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
+        this.goHomeCallback = goHomeCallback;
     }
 
     @Nullable
@@ -105,8 +104,8 @@ public class LogInOutFragment extends Fragment {
             }
         });
 
-        if (afterLogInCallback != null) {
-            afterLogInCallback.afterLogIn();
+        if (goHomeCallback != null) {
+            goHomeCallback.goHome();
         }
 
     }
@@ -158,6 +157,52 @@ public class LogInOutFragment extends Fragment {
                                                              }
                                                              newUser.setMyProducts(myProducts);
                                                          }
+
+
+//                                                         Product product = new Product();
+//                                                         product.setName("test3");
+//                                                         product.setPrice("20");
+//                                                         product.setCategory("Sports");
+//                                                         product.setDescription("abcd ef ghijklmn.\nopq rst - uvwxyz.");
+//
+//
+//                                                         Product product1 = new Product();
+//                                                         product1.setName("test2");
+//                                                         product1.setPrice("100");
+//                                                         product1.setCategory("Book");
+//                                                         product1.setDescription("12\n34567\n890.");
+//
+//                                                         int i = 0;
+//
+//                                                         for (DataSnapshot ds : snapshot.child("Users").getChildren()) {
+//                                                             User user = ds.getValue(User.class);
+//                                                             if (i == 0) {
+//                                                                 product.setSellerName(user.getName());
+//                                                                 product.setSellerEmail(user.getEmail());
+//                                                                 user.addProduct(product);
+//                                                             } else {
+//                                                                 product1.setSellerName(user.getName());
+//                                                                 product1.setSellerEmail(user.getEmail());
+//                                                                 user.addProduct(product1);
+//                                                             }
+//                                                             snapshot.child("Users").child(user.getUid()).getRef().setValue(user);
+//                                                             i++;
+//                                                         }
+//
+//                                                         ArrayList<Product> products = new ArrayList<>();
+////                                                         for (DataSnapshot ds : snapshot.child("Products").getChildren()) {
+////                                                             Product product1234 = ds.getValue(Product.class);
+////                                                             if (product.theSameProduct(product1234))
+////                                                                 products.add(product1234);
+////                                                         }
+//                                                         products.add(product);
+//                                                         products.add(product1);
+////                                                         newUser.setMyProducts(products);
+////                                                         newUser.addProduct(product);
+////                                                         snapshot.child("Users").child(mAuth.getCurrentUser().getUid()).getRef().setValue(newUser);
+//                                                         snapshot.child("Products").getRef().setValue(products);
+
+
                                                          CurrentUser.getInstance().setUser(newUser);
                                                      }
 
@@ -169,8 +214,8 @@ public class LogInOutFragment extends Fragment {
 
                                                  }
         );
-        if (afterLogInCallback != null) {
-            afterLogInCallback.afterLogIn();
+        if (goHomeCallback != null) {
+            goHomeCallback.goHome();
         }
     }
 }

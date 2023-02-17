@@ -9,6 +9,5 @@ public class App extends Application {
         super.onCreate();
 
         CurrentUser.initCurrentUser(this);
-        Database.initDatabase(this);
     }
 }

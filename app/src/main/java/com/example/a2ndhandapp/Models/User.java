@@ -1,10 +1,15 @@
 package com.example.a2ndhandapp.Models;
 
-import com.example.a2ndhandapp.Utils.Database;
+//import com.example.a2ndhandapp.Utils.Database;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 public class User {
+
+    //    private FirebaseDatabase firebaseDB;
     private String name;
     private String email;
     private String uid;
@@ -63,7 +68,7 @@ public class User {
         }
         this.myProducts.add(product);
         // TODO - add product to database
-        Database.getInstance().updateUser(this);
+//        Database.getInstance().updateUser(this);
         return this;
     }
 
@@ -78,7 +83,7 @@ public class User {
             }
         }
         // TODO - remove product from database
-        Database.getInstance().updateUser(this);
+//        Database.getInstance().updateUser(this);
         return this;
     }
 
@@ -107,7 +112,7 @@ public class User {
             this.myFavorites = new ArrayList<>();
         }
         this.myFavorites.add(product);
-        Database.getInstance().updateUser(this);
+//        Database.getInstance().updateUser(this);
         return this;
     }
 
@@ -122,7 +127,7 @@ public class User {
                 }
             }
         }
-        Database.getInstance().updateUser(this);
+//        Database.getInstance().updateUser(this);
         return this;
     }
 
@@ -146,4 +151,17 @@ public class User {
 //        }
 //        return false;
 //    }
+
+
+//    public void updateUser(User updatedUser) {
+//        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
+//                .child(updatedUser.getUid());
+//        currentUserRef.setValue(updatedUser);
+//    }
+
+    public void updateUser(/*User updatedUser,*/ FirebaseDatabase firebaseDB) {
+        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
+                .child(getUid());
+        currentUserRef.setValue(this);
+    }
 }

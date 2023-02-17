@@ -13,8 +13,6 @@ public class CurrentUser {
     private static CurrentUser instance = null;
     private User user;
     private String currentCategory;
-
-
     private ArrayList<Product> currentShowingProducts = new ArrayList<>();
 
     private CurrentUser() {
@@ -58,18 +56,18 @@ public class CurrentUser {
         return this;
     }
 
-    /**
-     * This two methods are for inform the main activity that if the next screen will show some
-     * products or not for the header
-     *
-     * @return
-     */
-    public ArrayList<Product> getCurrentShowingProducts() {
-        return currentShowingProducts;
-    }
-
-    public CurrentUser setCurrentShowingProducts(ArrayList<Product> currentShowingProducts) {
-        this.currentShowingProducts = currentShowingProducts;
-        return this;
-    }
+//    /**
+//     * This two methods are for inform the main activity that if the next screen will show some
+//     * products or not for the header
+//     *
+//     * @return
+//     */
+//    public ArrayList<Product> getCurrentShowingProducts() {
+//        return currentShowingProducts;
+//    }
+//
+//    public CurrentUser setCurrentShowingProducts(ArrayList<Product> currentShowingProducts) {
+//        this.currentShowingProducts = currentShowingProducts;
+//        return this;
+//    }
 }

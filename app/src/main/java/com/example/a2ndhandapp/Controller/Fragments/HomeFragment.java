@@ -1,7 +1,7 @@
 package com.example.a2ndhandapp.Controller.Fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +17,24 @@ import com.example.a2ndhandapp.Adapters.ProductItemAdapter;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.Interfaces.ProductItemCallback;
 import com.example.a2ndhandapp.Models.Product;
+import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
-import com.example.a2ndhandapp.Utils.Database;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
-    private ArrayList<String> categories = new ArrayList<>();
+
+    private FirebaseDatabase firebaseDB;
     private RecyclerView home_RV_products;
+    private ArrayList<Product> productsByCategory = new ArrayList<>();
     private ProductItemAdapter productAdapter;
     private GetProductCallback getProductCallback;
 
-    private ArrayList<Product> products = new ArrayList<>();
 
     public void setGetProductCallback(GetProductCallback getProductCallback) {
         this.getProductCallback = getProductCallback;
@@ -41,76 +46,46 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        categories = Database.getInstance().getCategories();
-        products = Database.getInstance().getAllProducts();
+        firebaseDB = FirebaseDatabase.getInstance();
 
         findViews(view);
 
-        initViews();
+//        initViews();
+        initProductRV();
 
         return view;
     }
 
-    /**
-     * Init the products list that we show in the recycler view to the user according to his
-     * searching
-     */
-    public void initProductsList() {
-        ArrayList<Product> myProducts = CurrentUser.getInstance().getUser().getMyProducts();
-        if (myProducts != null && !myProducts.isEmpty()
-                && products != null && !products.isEmpty()) {
-//            for (int i = products.size() - 1; i >= 0; i--) {
-//                for (int j = 0; j < myProducts.size(); j++) {
-//                    if (products.get(i).theSameProduct(myProducts.get(j))) {
-//                        products.remove(i);
-//                        break;
-//                    }
-//                }
-//            }
-            for (int i = products.size() - 1; i >= 0; i--) {
-                if (CurrentUser.getInstance().getCurrentCategory().equals("Other")) {
-                    if (categories.contains(products.get(i).getCategory()))
-                        products.remove(i);
-                } else if (!CurrentUser.getInstance().getCurrentCategory().equals("All")) {
-                    if (!products.get(i).getCategory().equals(CurrentUser.getInstance().getCurrentCategory())) {
-                        products.remove(i);
-                    }
-                }
-            }
-//            initProductRV();
-        }
-        CurrentUser.getInstance().setCurrentShowingProducts(products);
-        initProductRV();
-    }
 
-    private void initViews() {
-        initProductsList();
+//    private void initViews() {
 //        initProductRV();
-    }
+//    }
 
     private void initProductRV() {
-//        initProductsList();
-        Log.d("TAGTAGTAG", "1111111111111111111111111");
-        Log.d("TAGTAGTAG", "" + products.size());
+        readProductsByCategoryFromBD();
 
-//        if (CurrentUser.getInstance().getUser() != null) {
-
-        productAdapter = new ProductItemAdapter(getContext(), products);
-        Log.d("TAGTAGTAG", "2222222222222222222222");
+        productAdapter = new ProductItemAdapter(getContext(), productsByCategory);
         home_RV_products.setLayoutManager(new LinearLayoutManager(getContext()));
         home_RV_products.setAdapter(productAdapter);
-//        productAdapter.notifyDataSetChanged();
         productAdapter.setProductItemCallback(new ProductItemCallback() {
             @Override
             public void favoriteClicked(Product product, int position) {
                 if (CurrentUser.getInstance().getUser().isFavorite(product)) {
                     CurrentUser.getInstance().getUser().removeFavorite(product);
-                    Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
                 } else {
                     CurrentUser.getInstance().getUser().addFavorite(product);
-                    Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
                 }
+//                updateUser(CurrentUser.getInstance().getUser());
+                CurrentUser.getInstance().getUser().updateUser(firebaseDB);
                 home_RV_products.getAdapter().notifyItemChanged(position);
+//                Objects.requireNonNull(home_RV_products.getAdapter()).notifyItemChanged(position);
+//                home_RV_products.getAdapter().notifyItemRemoved(position);
+
+                // Is here for removing right away visually the product from the
+                // main 'page' in case we like this product
+                // (every product that we like will be removed from the main 'page')
+//                initViews();
+                initProductRV();
             }
 
             @Override
@@ -126,6 +101,40 @@ public class HomeFragment extends Fragment {
 
     private void findViews(View view) {
         home_RV_products = view.findViewById(R.id.home_RV_products);
+    }
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void readProductsByCategoryFromBD() {
+        DatabaseReference productsRef = firebaseDB.getReference("Products");
+        productsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot snapshot = task.getResult();
+                if (snapshot.exists()) {
+                    productsByCategory.clear();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Product product = ds.getValue(Product.class);
+                        if (product != null) {
+                            if (!CurrentUser.getInstance().getUser().isMyProduct(product)
+                                    && !CurrentUser.getInstance().getUser().isFavorite(product)) {
+                                if (CurrentUser.getInstance().getCurrentCategory().equals(product.getCategory())) {
+                                    productsByCategory.add(product);
+                                } else if (CurrentUser.getInstance().getCurrentCategory().equals("All")) {
+                                    productsByCategory.add(product);
+                                }
+                            }
+                        }
+                    }
+                    productAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    public void updateUser(User updatedUser) {
+        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
+                .child(updatedUser.getUid());
+        currentUserRef.setValue(updatedUser);
     }
 
 }

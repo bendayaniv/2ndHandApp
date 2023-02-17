@@ -8,17 +8,23 @@ public class Product {
     private String description;
     private String price;
     private String category;
+    private String sellerName;
+    private String sellerEmail;
+
     private ArrayList<String> images;
 
 
     public Product() {
     }
 
-    public Product(String name, String description, String price, String category, ArrayList<String> images) {
+    public Product(String name, String description, String price, String category,
+                   String sellerName, String sellerEmail, ArrayList<String> images) {
         this.name = name;
         setDescription(description);
         this.price = price;
         this.category = category;
+        this.sellerName = sellerName;
+        this.sellerEmail = sellerEmail;
         this.images = images;
     }
 
@@ -63,6 +69,24 @@ public class Product {
                 this.description.equals(product.getDescription()) &&
                 this.price.equals(product.getPrice()) &&
                 this.category.equals(product.getCategory());
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public Product setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+        return this;
+    }
+
+    public String getSellerEmail() {
+        return sellerEmail;
+    }
+
+    public Product setSellerEmail(String sellerEmail) {
+        this.sellerEmail = sellerEmail;
+        return this;
     }
 
     public ArrayList<String> getImages() {
