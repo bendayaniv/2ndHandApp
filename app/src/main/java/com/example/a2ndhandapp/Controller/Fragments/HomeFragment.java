@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void itemClicked(Product product, int position) {
                 if (getProductCallback != null) {
-                    Toast.makeText(getContext(), "position:  " + position, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "position:  " + position, Toast.LENGTH_SHORT).show();
                     getProductCallback.getProduct(product);
                 }
             }

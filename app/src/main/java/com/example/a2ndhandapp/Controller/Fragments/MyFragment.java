@@ -27,7 +27,7 @@ public class MyFragment extends Fragment {
 
     private FirebaseDatabase firebaseDB;
     private RecyclerView my_RV_products;
-    private ArrayList<Product> allProducts = new ArrayList<>();
+    private ArrayList<Product> allMyProducts = new ArrayList<>();
     private MyProductItemAdapter myProductAdapter;
     private GetProductCallback getProductCallback;
 
@@ -50,9 +50,9 @@ public class MyFragment extends Fragment {
     }
 
     private void initProductRV() {
-        readAllProductsFromDB();
+        readAllThisUserProductsFromDB();
 
-        myProductAdapter = new MyProductItemAdapter(getContext(), allProducts);
+        myProductAdapter = new MyProductItemAdapter(getContext(), allMyProducts);
         my_RV_products.setLayoutManager(new LinearLayoutManager(getContext()));
         my_RV_products.setAdapter(myProductAdapter);
         myProductAdapter.setProductItemCallback(new ProductItemCallback() {
@@ -80,17 +80,17 @@ public class MyFragment extends Fragment {
     }
 
 
-    private void readAllProductsFromDB() {
+    private void readAllThisUserProductsFromDB() {
         DatabaseReference productsRef = firebaseDB.getReference("Products");
         productsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
                 if (snapshot.exists()) {
-                    allProducts.clear();
+                    allMyProducts.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Product product = ds.getValue(Product.class);
                         if (CurrentUser.getInstance().getUser().isMyProduct(product)) {
-                            allProducts.add(product);
+                            allMyProducts.add(product);
                         }
                     }
                     myProductAdapter.notifyDataSetChanged();

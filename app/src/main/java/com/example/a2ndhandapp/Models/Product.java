@@ -1,5 +1,9 @@
 package com.example.a2ndhandapp.Models;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class Product {
@@ -10,8 +14,9 @@ public class Product {
     private String category;
     private String sellerName;
     private String sellerEmail;
-
     private ArrayList<String> images;
+    private String id;
+    private static int counter = 0;
 
 
     public Product() {
@@ -96,5 +101,28 @@ public class Product {
     public Product setImages(ArrayList<String> images) {
         this.images = images;
         return this;
+    }
+
+    public void removeProductFromDB(FirebaseDatabase firebaseDB) {
+        DatabaseReference productRef = firebaseDB.getReference("Products");
+        productRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot snapshot = task.getResult();
+                if (snapshot.exists()) {
+                    ArrayList<Product> allProducts = new ArrayList<>();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Product product = ds.getValue(Product.class);
+
+                        if (product != null) {
+                            // TODO - to handle with images
+                            if (!this.theSameProduct(product)) {
+                                allProducts.add(product);
+                            }
+                        }
+                    }
+                    productRef.setValue(allProducts);
+                }
+            }
+        });
     }
 }

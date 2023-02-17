@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -70,54 +69,110 @@ public class SingleProductFragment extends Fragment {
     public void initViews(View view) {
         if (currentProduct != null) {
             getAllUsersFromDB();
-            singleProduct_LBL_name.setText(currentProduct.getName());
-            singleProduct_LBL_category.setText(currentProduct.getCategory());
-            singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
-//            if (currentProduct.getDescription() == "") {
-            if (currentProduct.getDescription().equals("")) {
-                singleProduct_EDT_description.setText("There is no description for this product.");
+
+            createProductDetails(view);
+//            singleProduct_LBL_name.setText(currentProduct.getName());
+//            singleProduct_LBL_category.setText(currentProduct.getCategory());
+//            singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
+////            if (currentProduct.getDescription() == "") {
+//            if (currentProduct.getDescription().equals("")) {
+//                singleProduct_EDT_description.setText("There is no description for this product.");
+//            } else {
+//                singleProduct_EDT_description.setText(currentProduct.getDescription());
+//            }
+////            if (seller != null) {
+////                singleProduct_LBL_sellerDetails.setText("Contact " + seller.getName() + ": " + seller.getEmail());
+////            }
+//            singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
+//                    ": " + currentProduct.getSellerEmail());
+//            Glide.
+//                    with(this)
+//                    .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
+//                    .placeholder(R.drawable.temporary_img)
+//                    .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
+
+            if (!CurrentUser.getInstance().getUser().isMyProduct(currentProduct)) {
+                creatingFavoritePart();
+//                if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
+//                    singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
+//                } else {
+//                    singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
+//                }
+//                singleProduct_IMG_delete.setOnClickListener(v -> {
+//                    favoriteClick();
+//                });
             } else {
-                singleProduct_EDT_description.setText(currentProduct.getDescription());
+                creatingDeletePart();
+//                singleProduct_IMG_delete.setOnClickListener(v -> {
+//                    removeProduct();
+//
+//                    for (User user : allUsers) {
+//                        if (user.isMyProduct(currentProduct)) {
+//                            user.removeProduct(currentProduct);
+////                            updateUser(user);
+//                            user.updateUser(firebaseDB);
+//                        } else if (user.isFavorite(currentProduct)) {
+//                            user.removeFavorite(currentProduct);
+////                            updateUser(user);
+//                            user.updateUser(firebaseDB);
+//                        }
+//                    }
+//                    goHomeCallback.goHome();
+//                });
             }
+        }
+    }
+
+    private void createProductDetails(View view) {
+        singleProduct_LBL_name.setText(currentProduct.getName());
+        singleProduct_LBL_category.setText(currentProduct.getCategory());
+        singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
+//            if (currentProduct.getDescription() == "") {
+        if (currentProduct.getDescription().equals("")) {
+            singleProduct_EDT_description.setText("There is no description for this product.");
+        } else {
+            singleProduct_EDT_description.setText(currentProduct.getDescription());
+        }
 //            if (seller != null) {
 //                singleProduct_LBL_sellerDetails.setText("Contact " + seller.getName() + ": " + seller.getEmail());
 //            }
-            singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
-                    ": " + currentProduct.getSellerEmail());
-            Glide.
-                    with(this)
-                    .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
-                    .placeholder(R.drawable.temporary_img)
-                    .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
+        singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
+                ": " + currentProduct.getSellerEmail());
+        Glide.
+                with(this)
+                .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
+                .placeholder(R.drawable.temporary_img)
+                .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
+    }
 
-            if (!CurrentUser.getInstance().getUser().isMyProduct(currentProduct)) {
-                if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
-                    singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
-                } else {
-                    singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
+    private void creatingDeletePart() {
+        singleProduct_IMG_delete.setOnClickListener(v -> {
+            removeProductFromDB();
+
+            for (User user : allUsers) {
+                if (user.isMyProduct(currentProduct)) {
+                    user.removeProduct(currentProduct);
+//                            updateUser(user);
+                    user.updateUser(firebaseDB);
+                } else if (user.isFavorite(currentProduct)) {
+                    user.removeFavorite(currentProduct);
+//                            updateUser(user);
+                    user.updateUser(firebaseDB);
                 }
-                singleProduct_IMG_delete.setOnClickListener(v -> {
-                    favoriteClick();
-                });
-            } else {
-                singleProduct_IMG_delete.setOnClickListener(v -> {
-                    removeProduct();
-
-                    for (User user : allUsers) {
-                        if (user.isMyProduct(currentProduct)) {
-                            user.removeProduct(currentProduct);
-//                            updateUser(user);
-                            user.updateUser(firebaseDB);
-                        } else if (user.isFavorite(currentProduct)) {
-                            user.removeFavorite(currentProduct);
-//                            updateUser(user);
-                            user.updateUser(firebaseDB);
-                        }
-                    }
-                    goHomeCallback.goHome();
-                });
             }
+            goHomeCallback.goHome();
+        });
+    }
+
+    private void creatingFavoritePart() {
+        if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
+            singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
+        } else {
+            singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
         }
+        singleProduct_IMG_delete.setOnClickListener(v -> {
+            favoriteClick();
+        });
     }
 
     private void favoriteClick() {
@@ -167,14 +222,15 @@ public class SingleProductFragment extends Fragment {
                         User user = ds.getValue(User.class);
                         if (user != null) {
                             if (ds.child("myFavorites").exists()) {
-                                favorites.clear();
-                                for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
-                                    Product product = ds2.getValue(Product.class);
-                                    if (user.isFavorite(product)) {
-                                        favorites.add(product);
-                                    }
-                                }
-                                user.setMyFavorites(favorites);
+                                getUserFavoritesFromDB(user, ds);
+//                                favorites.clear();
+//                                for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
+//                                    Product product = ds2.getValue(Product.class);
+//                                    if (user.isFavorite(product)) {
+//                                        favorites.add(product);
+//                                    }
+//                                }
+//                                user.setMyFavorites(favorites);
                             }
 //                        ArrayList<Product> asd = new ArrayList<>();
                             if (ds.child("myProducts").exists()) {
@@ -206,34 +262,47 @@ public class SingleProductFragment extends Fragment {
         });
     }
 
+    private void getUserFavoritesFromDB(User user, DataSnapshot ds) {
+        favorites.clear();
+        for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
+            Product product = ds2.getValue(Product.class);
+            if (user.isFavorite(product)) {
+                favorites.add(product);
+            }
+        }
+        user.setMyFavorites(favorites);
+    }
 
-    public void removeProduct() {
-        DatabaseReference productRef = firebaseDB.getReference("Products");
-        productRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
-                if (snapshot.exists()) {
-                    allProducts.clear();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Product product = ds.getValue(Product.class);
-                        if (product != null) {
-                            // TODO - to handle with images
-//                            if (currentProduct.theSameProduct(product)) {
+
+    public void removeProductFromDB() {
+        currentProduct.removeProductFromDB(firebaseDB);
+//        DatabaseReference productRef = firebaseDB.getReference("Products");
+//        productRef.get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                DataSnapshot snapshot = task.getResult();
+//                if (snapshot.exists()) {
+//                    allProducts.clear();
+//                    for (DataSnapshot ds : snapshot.getChildren()) {
+//                        Product product = ds.getValue(Product.class);
 //
-//                            } else {
+//                        if (product != null) {
+//                            // TODO - to handle with images
+////                            if (currentProduct.theSameProduct(product)) {
+////
+////                            } else {
+////                                allProducts.add(product);
+////                            }
+//                            if (!currentProduct.theSameProduct(product)) {
 //                                allProducts.add(product);
 //                            }
-                            if (!currentProduct.theSameProduct(product)) {
-                                allProducts.add(product);
-                            }
-
-                        }
-                    }
-                    productRef.setValue(allProducts);
-                }
-
-            }
-        });
+//
+//                        }
+//                    }
+//                    productRef.setValue(allProducts);
+//                }
+//
+//            }
+//        });
 
 //        productRef.addValueEventListener(new ValueEventListener() {
 //            @Override

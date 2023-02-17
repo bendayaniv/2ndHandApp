@@ -23,32 +23,17 @@
             android:scaleType="fitXY"
             android:src="@drawable/temporary_img" />
 
-        <!--        <androidx.appcompat.widget.AppCompatImageView-->
-        <!--            android:id="@+id/product_IMG_favorite"-->
-        <!--            android:layout_width="36dp"-->
-        <!--            android:layout_height="36dp"-->
-        <!--            android:layout_alignParentTop="true"-->
-        <!--            android:layout_alignParentEnd="true"-->
-        <!--            android:layout_marginTop="6dp"-->
-        <!--            android:layout_marginEnd="6dp"-->
-        <!--            android:scaleType="fitCenter"-->
-        <!--            android:src="@drawable/white_heart" />-->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/favoriteProduct_IMG_favorite"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/white_heart" />
 
-        <!--        <com.google.android.material.textview.MaterialTextView-->
-        <!--            android:id="@+id/product_LBL_name"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:layout_marginEnd="8dp"-->
-        <!--            android:layout_toStartOf="@id/product_IMG_favorite"-->
-        <!--            android:layout_toEndOf="@id/product_IMG_image"-->
-        <!--            android:maxLines="2"-->
-        <!--            android:minLines="2"-->
-        <!--            android:text="PRODUCT_NAME"-->
-        <!--            android:textColor="@color/black"-->
-        <!--            android:textSize="24sp"-->
-        <!--            android:textStyle="bold" />-->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/favoriteProduct_LBL_name"
             android:layout_width="match_parent"
@@ -56,6 +41,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/product_IMG_favorite"
             android:layout_toEndOf="@id/favoriteProduct_IMG_image"
             android:maxLines="2"
             android:minLines="2"
@@ -63,6 +49,20 @@
             android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold" />
+        <!--        <com.google.android.material.textview.MaterialTextView-->
+        <!--            android:id="@+id/favoriteProduct_LBL_name"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            android:layout_marginTop="8dp"-->
+        <!--            android:layout_marginEnd="8dp"-->
+        <!--            android:layout_toEndOf="@id/favoriteProduct_IMG_image"-->
+        <!--            android:maxLines="2"-->
+        <!--            android:minLines="2"-->
+        <!--            android:text="PRODUCT_NAME"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:textSize="24sp"-->
+        <!--            android:textStyle="bold" />-->
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_LBL_category"
