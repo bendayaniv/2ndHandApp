@@ -1,9 +1,5 @@
 package com.example.a2ndhandapp.Models;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 
 public class Product {
@@ -22,8 +18,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, String description, String price, String category,
+    public Product(String id, String name, String description, String price, String category,
                    String sellerName, String sellerEmail, ArrayList<String> images) {
+        this.id = id;
         this.name = name;
         setDescription(description);
         this.price = price;
@@ -70,7 +67,8 @@ public class Product {
     }
 
     public boolean theSameProduct(Product product) {
-        return this.name.equals(product.getName()) &&
+        return this.id.equals(product.getId()) &&
+                this.name.equals(product.getName()) &&
                 this.description.equals(product.getDescription()) &&
                 this.price.equals(product.getPrice()) &&
                 this.category.equals(product.getCategory());
@@ -103,26 +101,18 @@ public class Product {
         return this;
     }
 
-    public void removeProductFromDB(FirebaseDatabase firebaseDB) {
-        DatabaseReference productRef = firebaseDB.getReference("Products");
-        productRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
-                if (snapshot.exists()) {
-                    ArrayList<Product> allProducts = new ArrayList<>();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        Product product = ds.getValue(Product.class);
-
-                        if (product != null) {
-                            // TODO - to handle with images
-                            if (!this.theSameProduct(product)) {
-                                allProducts.add(product);
-                            }
-                        }
-                    }
-                    productRef.setValue(allProducts);
-                }
-            }
-        });
+    public String getId() {
+        return id;
     }
+
+    public Product setId(String id) {
+        this.id = id;
+        return this;
+    }
+
+//    public void removeProductFromDB(FirebaseDatabase firebaseDB) {
+//        DatabaseReference productRef = firebaseDB.getReference("Products");
+//
+//        productRef.getRef().child(String.valueOf(this.id)).removeValue();
+//    }
 }

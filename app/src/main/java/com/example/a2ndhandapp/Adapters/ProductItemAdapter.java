@@ -2,11 +2,9 @@ package com.example.a2ndhandapp.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -30,8 +28,6 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     public ProductItemAdapter(Context context, ArrayList<Product> products) {
         this.context = context;
         this.products = products;
-//        notify();
-//        notifyDataSetChanged();
     }
 
     public ProductItemAdapter setProductItemCallback(ProductItemCallback productCallback) {
@@ -53,7 +49,7 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
         Product product = getItem(position);
         holder.product_LBL_name.setText(product.getName() + "");
         holder.product_LBL_category.setText(product.getCategory() + "");
-        holder.product_LBL_price.setText(product.getPrice() + " NIS₪");
+        holder.product_LBL_price.setText(product.getPrice() + "₪");
 
         if (CurrentUser.getInstance() != null) {
             if (CurrentUser.getInstance().getUser().getMyFavorites() != null) {
@@ -94,10 +90,6 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
-//            notifyDataSetChanged();
-//            ProductItemAdapter.this.notifyDataSetChanged();
-
-            // TODO - the problem is here - he don't know on the first time the real size
 
             product_IMG_image = itemView.findViewById(R.id.product_IMG_image);
             product_IMG_favorite = itemView.findViewById(R.id.product_IMG_favorite);

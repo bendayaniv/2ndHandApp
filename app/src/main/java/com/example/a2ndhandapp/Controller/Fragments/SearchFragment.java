@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class SearchFragment extends Fragment {
 
-    private FirebaseDatabase firebaseDB;
     private RecyclerView search_RV_categories;
     private ArrayList<String> categories = new ArrayList<>();
     private CategoryAdapter categoryAdapter;
@@ -38,15 +37,13 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        firebaseDB = FirebaseDatabase.getInstance();
-
         findViews(view);
         initCategoryRV();
         return view;
     }
 
     private void initCategoryRV() {
-        DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
         getCategoriesFromDB(categoriesRef);
 //
         categoryAdapter = new CategoryAdapter(getContext(), categories);

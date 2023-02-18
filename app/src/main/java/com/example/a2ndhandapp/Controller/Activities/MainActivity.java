@@ -9,7 +9,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,19 +57,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void getProduct(Product product) {
             // TODO - send to "ProductFragment" the specific product
             if (singleProductFragment != null) {
-                Log.d("TAG123TAG123TAG123TAG123", "getProduct: " + product.getName());
                 singleProductFragment.setCurrentProduct(product);
-//                singleProductFragment.setCurrentProduct(Current);
                 getSupportActionBar().setTitle(product.getName()); // Set the title of the toolbar
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, singleProductFragment).commit(); // Set the slideshow fragment
             }
-        }
-
-        // The thinking - to be able to go back
-        @Override
-        public void backToHome() {
-            startActivity(new Intent(MainActivity.this, SplashActivity.class));
-            finish();
         }
     };
 
@@ -88,12 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             CurrentUser.getInstance().setCurrentCategory(category);
             navigationView.setCheckedItem(R.id.nav_home);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, homeFragment).commit(); // Set the home fragment
-//            if (CurrentUser.getInstance().getCurrentShowingProducts().isEmpty()) {
             getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
-//            } else {
-//                getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory() + " - No Products to Show"); // Set the title of the toolbar
-//
-//            }
         }
     };
 
@@ -194,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myFragment.setGetProductCallback(getProductCallback);
 
         addFragment = new AddFragment();
-        addFragment.setGetProductCallback(getProductCallback);
+        addFragment.setGoHomeCallback(goHomeCallback);
 
         logInOutFragment = new LogInOutFragment();
         logInOutFragment.setGoHomeCallback(goHomeCallback);
@@ -207,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_home:
-//                homeFragment.initProductsList();
                 navigationView.setCheckedItem(R.id.nav_home);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, homeFragment).commit(); // Set the home fragment
                 getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
@@ -228,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle("My"); // Set the title of the toolbar
                 break;
             case R.id.nav_add:
+//                addFragment.resetAutoCompleteText();
                 navigationView.setCheckedItem(R.id.nav_add);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, addFragment).commit(); // Set the slideshow fragment
                 getSupportActionBar().setTitle("Add"); // Set the title of the toolbar

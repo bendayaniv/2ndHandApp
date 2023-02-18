@@ -2,7 +2,6 @@ package com.example.a2ndhandapp.Controller.Fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class SingleProductFragment extends Fragment {
-//public class SingleProductFragment implements AdapterView.OnItemClickListener {
-
-    private FirebaseDatabase firebaseDB;
-    private ArrayList<User> allUsers = new ArrayList<>();
-    private ArrayList<Product> allProducts = new ArrayList<>();
-    ArrayList<Product> favorites = new ArrayList<>();
-    ArrayList<Product> myProducts = new ArrayList<>();
     private AppCompatImageView singleProduct_IMG_image;
     private AppCompatImageView singleProduct_IMG_delete;
     private MaterialTextView singleProduct_LBL_name;
@@ -44,6 +36,8 @@ public class SingleProductFragment extends Fragment {
     private Product currentProduct;
     //    private User seller;
     private GoHomeCallback goHomeCallback;
+    private ArrayList<Product> myProducts;
+    private ArrayList<Product> favorites;
 
     public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
         this.goHomeCallback = goHomeCallback;
@@ -53,10 +47,6 @@ public class SingleProductFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_single_product, container, false);
-
-        firebaseDB = FirebaseDatabase.getInstance();
-
-//        getAllUsersFromDB();
 
         findViews(view);
 
@@ -68,57 +58,13 @@ public class SingleProductFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     public void initViews(View view) {
         if (currentProduct != null) {
-            getAllUsersFromDB();
 
             createProductDetails(view);
-//            singleProduct_LBL_name.setText(currentProduct.getName());
-//            singleProduct_LBL_category.setText(currentProduct.getCategory());
-//            singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
-////            if (currentProduct.getDescription() == "") {
-//            if (currentProduct.getDescription().equals("")) {
-//                singleProduct_EDT_description.setText("There is no description for this product.");
-//            } else {
-//                singleProduct_EDT_description.setText(currentProduct.getDescription());
-//            }
-////            if (seller != null) {
-////                singleProduct_LBL_sellerDetails.setText("Contact " + seller.getName() + ": " + seller.getEmail());
-////            }
-//            singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
-//                    ": " + currentProduct.getSellerEmail());
-//            Glide.
-//                    with(this)
-//                    .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
-//                    .placeholder(R.drawable.temporary_img)
-//                    .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
 
             if (!CurrentUser.getInstance().getUser().isMyProduct(currentProduct)) {
                 creatingFavoritePart();
-//                if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
-//                    singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
-//                } else {
-//                    singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
-//                }
-//                singleProduct_IMG_delete.setOnClickListener(v -> {
-//                    favoriteClick();
-//                });
             } else {
                 creatingDeletePart();
-//                singleProduct_IMG_delete.setOnClickListener(v -> {
-//                    removeProduct();
-//
-//                    for (User user : allUsers) {
-//                        if (user.isMyProduct(currentProduct)) {
-//                            user.removeProduct(currentProduct);
-////                            updateUser(user);
-//                            user.updateUser(firebaseDB);
-//                        } else if (user.isFavorite(currentProduct)) {
-//                            user.removeFavorite(currentProduct);
-////                            updateUser(user);
-//                            user.updateUser(firebaseDB);
-//                        }
-//                    }
-//                    goHomeCallback.goHome();
-//                });
             }
         }
     }
@@ -127,15 +73,11 @@ public class SingleProductFragment extends Fragment {
         singleProduct_LBL_name.setText(currentProduct.getName());
         singleProduct_LBL_category.setText(currentProduct.getCategory());
         singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
-//            if (currentProduct.getDescription() == "") {
         if (currentProduct.getDescription().equals("")) {
             singleProduct_EDT_description.setText("There is no description for this product.");
         } else {
             singleProduct_EDT_description.setText(currentProduct.getDescription());
         }
-//            if (seller != null) {
-//                singleProduct_LBL_sellerDetails.setText("Contact " + seller.getName() + ": " + seller.getEmail());
-//            }
         singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
                 ": " + currentProduct.getSellerEmail());
         Glide.
@@ -147,19 +89,16 @@ public class SingleProductFragment extends Fragment {
 
     private void creatingDeletePart() {
         singleProduct_IMG_delete.setOnClickListener(v -> {
-            removeProductFromDB();
 
-            for (User user : allUsers) {
-                if (user.isMyProduct(currentProduct)) {
-                    user.removeProduct(currentProduct);
-//                            updateUser(user);
-                    user.updateUser(firebaseDB);
-                } else if (user.isFavorite(currentProduct)) {
-                    user.removeFavorite(currentProduct);
-//                            updateUser(user);
-                    user.updateUser(firebaseDB);
-                }
-            }
+            removeDeletedProductFromUsersWhoLikeHim();
+
+            // Remove the product from the user's list of products.
+            CurrentUser.getInstance().getUser().removeProduct(currentProduct);
+
+            DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Products");
+
+            productRef.getRef().child(String.valueOf(currentProduct.getId())).removeValue();
+
             goHomeCallback.goHome();
         });
     }
@@ -183,8 +122,6 @@ public class SingleProductFragment extends Fragment {
             CurrentUser.getInstance().getUser().addFavorite(currentProduct);
             singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
         }
-//        updateUser(CurrentUser.getInstance().getUser());
-        CurrentUser.getInstance().getUser().updateUser(firebaseDB);
     }
 
     private void findViews(View view) {
@@ -206,147 +143,38 @@ public class SingleProductFragment extends Fragment {
 
 
     /**
-     * In case there is update that connects to a product
-     * For example - user delete one of his products, so we need to remove the product from all the
-     * users favorites lists and from his the specific user myProducts list
+     * This method removes the deleted product from all users who liked him.
      */
-    private void getAllUsersFromDB() {
-        DatabaseReference usersRef = firebaseDB.getReference("Users");
+    private void removeDeletedProductFromUsersWhoLikeHim() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
         usersRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
                 if (snapshot.exists()) {
-//                    ArrayList<Product> asd = new ArrayList<>();
-                    allUsers.clear();
+                    if (favorites != null) {
+                        favorites.clear();
+                    } else {
+                        favorites = new ArrayList<>();
+                    }
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         User user = ds.getValue(User.class);
                         if (user != null) {
                             if (ds.child("myFavorites").exists()) {
-                                getUserFavoritesFromDB(user, ds);
-//                                favorites.clear();
-//                                for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
-//                                    Product product = ds2.getValue(Product.class);
-//                                    if (user.isFavorite(product)) {
-//                                        favorites.add(product);
-//                                    }
-//                                }
-//                                user.setMyFavorites(favorites);
-                            }
-//                        ArrayList<Product> asd = new ArrayList<>();
-                            if (ds.child("myProducts").exists()) {
-                                myProducts.clear();
-                                for (DataSnapshot ds2 : ds.child("myProducts").getChildren()) {
+                                for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
                                     Product product = ds2.getValue(Product.class);
-                                    if (user.isMyProduct(product)) {
-                                        myProducts.add(product);
-//                                    if (currentProduct.theSameProduct(product)) {
-//                                        product.setSellerName(user.getName());
-//                                        product.setSellerEmail(user.getEmail());
-//                                        asd.add(product);
-//                                        Log.d("setTheSellersetTheSeller", "setTheSeller: " + user.getName());
-////                                        this.seller = user;
-////                                        Log.d("setTheSellersetTheSeller", "setTheSeller: " + seller.getName());
-////                                        DatabaseReference productRef = firebaseDB.getReference("Products");
-//                                    }
+                                    if (product != null) {
+                                        if (user.isFavorite(product) && !product.theSameProduct(currentProduct)) {
+                                            favorites.add(product);
+                                        } else {
+                                            ds2.getRef().removeValue();
+                                        }
                                     }
                                 }
-                                user.setMyProducts(myProducts);
                             }
-                            allUsers.add(user);
                         }
                     }
-//                    DatabaseReference productRef = firebaseDB.getReference("Products");
-//                    productRef.setValue(asd);
                 }
             }
         });
     }
-
-    private void getUserFavoritesFromDB(User user, DataSnapshot ds) {
-        favorites.clear();
-        for (DataSnapshot ds2 : ds.child("myFavorites").getChildren()) {
-            Product product = ds2.getValue(Product.class);
-            if (user.isFavorite(product)) {
-                favorites.add(product);
-            }
-        }
-        user.setMyFavorites(favorites);
-    }
-
-
-    public void removeProductFromDB() {
-        currentProduct.removeProductFromDB(firebaseDB);
-//        DatabaseReference productRef = firebaseDB.getReference("Products");
-//        productRef.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                DataSnapshot snapshot = task.getResult();
-//                if (snapshot.exists()) {
-//                    allProducts.clear();
-//                    for (DataSnapshot ds : snapshot.getChildren()) {
-//                        Product product = ds.getValue(Product.class);
-//
-//                        if (product != null) {
-//                            // TODO - to handle with images
-////                            if (currentProduct.theSameProduct(product)) {
-////
-////                            } else {
-////                                allProducts.add(product);
-////                            }
-//                            if (!currentProduct.theSameProduct(product)) {
-//                                allProducts.add(product);
-//                            }
-//
-//                        }
-//                    }
-//                    productRef.setValue(allProducts);
-//                }
-//
-//            }
-//        });
-
-//        productRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                allProducts.clear();
-//                for (DataSnapshot ds : snapshot.getChildren()) {
-//                    Product product = ds.getValue(Product.class);
-//                    // TODO - to handle with images
-//                    if (currentProduct.theSameProduct(product)) {
-//
-//                    } else {
-//                        allProducts.add(product);
-//                    }
-//                }
-//                productRef.setValue(allProducts);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.d("firebase", "Error getting data" + error.getMessage());
-//            }
-//        });
-
-    }
-
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        if()
-////        Product product = (Product) parent.getItemAtPosition(position);
-////        if (product != null) {
-////            if (product.theSameProduct(currentProduct)) {
-////                Toast.makeText(getContext(), "You can't buy your own product", Toast.LENGTH_SHORT).show();
-////            } else {
-////                Intent intent = new Intent(getContext(), SingleProductActivity.class);
-////                intent.putExtra("product", product);
-////                startActivity(intent);
-////            }
-////        }
-//    }
-
-
-//    public void updateUser(User updatedUser) {
-//        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
-//                .child(updatedUser.getUid());
-//        currentUserRef.setValue(updatedUser);
-//    }
 }

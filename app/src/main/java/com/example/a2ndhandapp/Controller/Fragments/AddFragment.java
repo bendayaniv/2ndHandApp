@@ -19,8 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
+import com.example.a2ndhandapp.Adapters.CategoryAutoCompleteTextAdapter;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
+import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
+import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
+import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -31,8 +35,7 @@ import java.util.ArrayList;
 
 public class AddFragment extends Fragment {
 
-    private FirebaseDatabase firebaseDB;
-
+    //    private FirebaseDatabase firebaseDB;
     private AppCompatEditText add_EDT_productName;
     private AppCompatEditText add_EDT_productPrice;
     private AppCompatEditText add_EDT_productDescription;
@@ -43,14 +46,32 @@ public class AddFragment extends Fragment {
     private final int GALLERY_REQUEST_CODE = 1000;
     private ArrayList<String> categories = new ArrayList<>();
     private AutoCompleteTextView auto_complete_text;
-    private ArrayAdapter<String> adapterItems;
+    //    private ArrayAdapter<String> adapterItems;
+    private CategoryAutoCompleteTextAdapter categoryAutoCompleteTextAdapter;
 
 
-    private GetProductCallback getProductCallback;
+//    private GetProductCallback getProductCallback;
+//
+//    public void setGetProductCallback(GetProductCallback getProductCallback) {
+//        this.getProductCallback = getProductCallback;
+//    }
 
-    public void setGetProductCallback(GetProductCallback getProductCallback) {
-        this.getProductCallback = getProductCallback;
+
+    private GoHomeCallback goHomeCallback;
+
+    public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
+        this.goHomeCallback = goHomeCallback;
     }
+
+//    public void resetAutoCompleteText() {
+//        if (auto_complete_text != null) {
+////            adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, categories);
+//            setAdapterToAutoCompleteText();
+//            Log.d("TAG", "resetAutoCompleteText: is not null");
+//        } else {
+//            Log.d("TAG", "resetAutoCompleteText: auto_complete_text is null");
+//        }
+//    }
 
 
     @Nullable
@@ -58,13 +79,17 @@ public class AddFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add, container, false);
 
-        firebaseDB = FirebaseDatabase.getInstance();
-        DatabaseReference categoriesRef = firebaseDB.getReference("Categories");
-        getCategoriesFromDB(categoriesRef/*, categories*/);
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
+        getCategoriesFromDB(categoriesRef);
 
         findViews(view);
 
+        initView();
 
+        return view;
+    }
+
+    private void productImageButton() {
         add_BTN_addProdImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,10 +98,13 @@ public class AddFragment extends Fragment {
                 startActivityForResult(iGallery, GALLERY_REQUEST_CODE); // start the activity with the gallery
             }
         });
+    }
 
-        adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, categories);
+    private void autoCompleteFunction() {
+        categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
 
-        auto_complete_text.setAdapter(adapterItems);
+        auto_complete_text.setAdapter(categoryAutoCompleteTextAdapter);
+
         auto_complete_text.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -84,29 +112,48 @@ public class AddFragment extends Fragment {
                 Toast.makeText(getContext(), "Item: " + item, Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void addButtonFunction() {
         add_BTN_addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String productName = add_EDT_productName.getText().toString();
                 String productPrice = add_EDT_productPrice.getText().toString();
-//                String productDescription = add_EDT_productDescription.getText().toString();
+                String productDescription = add_EDT_productDescription.getText().toString();
                 String productCategory = add_TIL_productCategory.getEditText().getText().toString();
 //                String productImage = add_IMG_productImage.toString();
 
                 if (productName.isEmpty() || productPrice.isEmpty() || productCategory.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 } else if (!productPrice.chars().allMatch(Character::isDigit)) {
-                    Toast.makeText(getContext(), "Price is only with numbers", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Product added successfully", Toast.LENGTH_SHORT).show();
-                    getProductCallback.backToHome();
+                    if (productDescription.equals("Add the product description here")) {
+                        productDescription = "";
+                    }
+                    String newId = String.valueOf(Integer.valueOf(CurrentUser.getInstance().getLastProductId()));
+                    Product newProduct = new Product(newId, productName, productDescription, productPrice, productCategory,
+                            CurrentUser.getInstance().getUser().getName(), CurrentUser.getInstance().getUser().getEmail(), null);
+
+                    DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
+                    productsRef.getRef().child(String.valueOf(newProduct.getId())).setValue(newProduct);
+
+                    CurrentUser.getInstance().getUser().addProduct(newProduct);
+
+                    newId = String.valueOf((Integer.parseInt(newId)) + 1);
+                    CurrentUser.getInstance().setLastProductId(newId);
+                    goHomeCallback.goHome();
                 }
             }
         });
+    }
 
+    private void initView() {
+        productImageButton();
 
-        return view;
+        autoCompleteFunction();
+
+        addButtonFunction();
     }
 
     /**
@@ -144,8 +191,7 @@ public class AddFragment extends Fragment {
         }
     }
 
-
-    public void getCategoriesFromDB(DatabaseReference reference/*, ArrayList<String> list*/) {
+    public void getCategoriesFromDB(DatabaseReference reference) {
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();

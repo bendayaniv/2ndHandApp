@@ -14,6 +14,8 @@ public class CurrentUser {
     private User user;
     private String currentCategory;
     private ArrayList<Product> currentShowingProducts = new ArrayList<>();
+    private String lastProductId;
+
 
     private CurrentUser() {
     }
@@ -53,6 +55,15 @@ public class CurrentUser {
 
     public CurrentUser setCurrentCategory(String currentCategory) {
         this.currentCategory = currentCategory;
+        return this;
+    }
+
+    public String getLastProductId() {
+        return lastProductId;
+    }
+
+    public CurrentUser setLastProductId(String lastProductId) {
+        this.lastProductId = lastProductId;
         return this;
     }
 

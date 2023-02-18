@@ -1,15 +1,11 @@
 package com.example.a2ndhandapp.Models;
 
-//import com.example.a2ndhandapp.Utils.Database;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 public class User {
-
-    //    private FirebaseDatabase firebaseDB;
     private String name;
     private String email;
     private String uid;
@@ -67,8 +63,10 @@ public class User {
             this.myProducts = new ArrayList<>();
         }
         this.myProducts.add(product);
-        // TODO - add product to database
-//        Database.getInstance().updateUser(this);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").getRef()
+                .child(this.getUid());
+        userRef.setValue(this);
+
         return this;
     }
 
@@ -82,15 +80,15 @@ public class User {
                 }
             }
         }
-        // TODO - remove product from database
-//        Database.getInstance().updateUser(this);
+
+        FirebaseDatabase.getInstance().getReference("Users").getRef()
+                .child(this.getUid()).child("myProducts").getRef().setValue(this.myProducts);
         return this;
     }
 
     public boolean isMyProduct(Product product) {
         if (this.myProducts != null) {
             for (int i = 0; i < myProducts.size(); i++) {
-//                if (theSameProduct(product, i))
                 if (this.myProducts.get(i).theSameProduct(product))
                     return true;
             }
@@ -112,56 +110,34 @@ public class User {
             this.myFavorites = new ArrayList<>();
         }
         this.myFavorites.add(product);
-//        Database.getInstance().updateUser(this);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").getRef()
+                .child(this.getUid());
+        userRef.setValue(this);
         return this;
     }
 
     public User removeFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
-//                if (theSameProduct(product, i)) {
                 if (this.myFavorites.get(i).theSameProduct(product)) {
-//                    this.myFavorites.remove(i);
                     this.myFavorites.remove(this.myFavorites.get(i));
                     break;
                 }
             }
         }
-//        Database.getInstance().updateUser(this);
+
+        FirebaseDatabase.getInstance().getReference("Users").getRef()
+                .child(this.getUid()).child("myFavorites").getRef().setValue(this.myFavorites);
         return this;
     }
 
     public boolean isFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
-//                if (theSameProduct(product, i))
                 if (this.myFavorites.get(i).theSameProduct(product))
                     return true;
             }
         }
         return false;
-    }
-
-//    public boolean theSameProduct(Product product, int index) {
-//        if (myFavorites.get(index).getCategory().equals(product.getCategory())
-//                && myFavorites.get(index).getName().equals(product.getName())
-//                && myFavorites.get(index).getPrice().equals(product.getPrice())
-//                && myFavorites.get(index).getDescription().equals(product.getDescription())) {
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-//    public void updateUser(User updatedUser) {
-//        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
-//                .child(updatedUser.getUid());
-//        currentUserRef.setValue(updatedUser);
-//    }
-
-    public void updateUser(/*User updatedUser,*/ FirebaseDatabase firebaseDB) {
-        DatabaseReference currentUserRef = firebaseDB.getReference("Users")
-                .child(getUid());
-        currentUserRef.setValue(this);
     }
 }

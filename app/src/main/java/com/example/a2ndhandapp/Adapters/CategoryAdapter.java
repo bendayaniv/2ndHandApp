@@ -29,10 +29,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             R.drawable.other_icon};
     private User currentUser;
 
-    public CategoryAdapter(Context context, ArrayList<String> categories/*, int[] images*/) {
+    public CategoryAdapter(Context context, ArrayList<String> categories) {
         this.context = context;
         this.categories = categories;
-//        this.categoryImages = images;
     }
 
     public CategoryAdapter setCategoryCallback(GetCategoryCallback categoryCallback) {

@@ -38,7 +38,6 @@ public class LogInOutFragment extends Fragment {
     private FirebaseDatabase db;
     private DatabaseReference mDatabase;
     private GoHomeCallback goHomeCallback;
-//    private ArrayList<Product> products = new ArrayList<>();
 
     public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
         this.goHomeCallback = goHomeCallback;
@@ -53,7 +52,6 @@ public class LogInOutFragment extends Fragment {
         FirebaseUser user = mAuth.getCurrentUser();
         db = FirebaseDatabase.getInstance();
         mDatabase = db.getReference();
-
 
         if (user == null) {
             login();
@@ -158,52 +156,21 @@ public class LogInOutFragment extends Fragment {
                                                              newUser.setMyProducts(myProducts);
                                                          }
 
-
-//                                                         Product product = new Product();
-//                                                         product.setName("test3");
-//                                                         product.setPrice("20");
-//                                                         product.setCategory("Sports");
-//                                                         product.setDescription("abcd ef ghijklmn.\nopq rst - uvwxyz.");
-//
-//
-//                                                         Product product1 = new Product();
-//                                                         product1.setName("test2");
-//                                                         product1.setPrice("100");
-//                                                         product1.setCategory("Book");
-//                                                         product1.setDescription("12\n34567\n890.");
-//
-//                                                         int i = 0;
-//
-//                                                         for (DataSnapshot ds : snapshot.child("Users").getChildren()) {
-//                                                             User user = ds.getValue(User.class);
-//                                                             if (i == 0) {
-//                                                                 product.setSellerName(user.getName());
-//                                                                 product.setSellerEmail(user.getEmail());
-//                                                                 user.addProduct(product);
-//                                                             } else {
-//                                                                 product1.setSellerName(user.getName());
-//                                                                 product1.setSellerEmail(user.getEmail());
-//                                                                 user.addProduct(product1);
-//                                                             }
-//                                                             snapshot.child("Users").child(user.getUid()).getRef().setValue(user);
-//                                                             i++;
-//                                                         }
-//
-//                                                         ArrayList<Product> products = new ArrayList<>();
-////                                                         for (DataSnapshot ds : snapshot.child("Products").getChildren()) {
-////                                                             Product product1234 = ds.getValue(Product.class);
-////                                                             if (product.theSameProduct(product1234))
-////                                                                 products.add(product1234);
-////                                                         }
-//                                                         products.add(product);
-//                                                         products.add(product1);
-////                                                         newUser.setMyProducts(products);
-////                                                         newUser.addProduct(product);
-////                                                         snapshot.child("Users").child(mAuth.getCurrentUser().getUid()).getRef().setValue(newUser);
-//                                                         snapshot.child("Products").getRef().setValue(products);
-
-
                                                          CurrentUser.getInstance().setUser(newUser);
+                                                         ArrayList<Product> products = new ArrayList<>();
+                                                         if (snapshot.child("Products").exists()) {
+                                                             for (DataSnapshot ds : snapshot.child("Products").getChildren()) {
+                                                                 products.add(ds.getValue(Product.class));
+                                                             }
+                                                             if (products.size() == 0) {
+                                                                 CurrentUser.getInstance().setLastProductId(String.valueOf(0));
+                                                             } else {
+                                                                 CurrentUser.getInstance().setLastProductId(products.get(products.size() - 1).getId());
+                                                             }
+                                                         } else {
+                                                             CurrentUser.getInstance().setLastProductId(String.valueOf(0));
+                                                         }
+
                                                      }
 
                                                      @Override

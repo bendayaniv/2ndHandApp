@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 public class MyFragment extends Fragment {
 
-    private FirebaseDatabase firebaseDB;
     private RecyclerView my_RV_products;
     private ArrayList<Product> allMyProducts = new ArrayList<>();
     private MyProductItemAdapter myProductAdapter;
@@ -39,8 +38,6 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
-
-        firebaseDB = FirebaseDatabase.getInstance();
 
         findViews(view);
 
@@ -81,7 +78,7 @@ public class MyFragment extends Fragment {
 
 
     private void readAllThisUserProductsFromDB() {
-        DatabaseReference productsRef = firebaseDB.getReference("Products");
+        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
         productsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();

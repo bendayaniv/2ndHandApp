@@ -24,8 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class FavoritesFragment extends Fragment {
-
-    private FirebaseDatabase firebaseDB;
+    
     private RecyclerView favorites_RV_products;
     private ArrayList<Product> allMyFavoritesProducts = new ArrayList<>();
     private ProductItemAdapter productAdapter;
@@ -40,19 +39,12 @@ public class FavoritesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
-        firebaseDB = FirebaseDatabase.getInstance();
-
         findViews(view);
 
-//        initViews();
         initProductRV();
 
         return view;
     }
-
-//    private void initViews() {
-//        initProductRV();
-//    }
 
     private void initProductRV() {
         readAllFavoritesProductsFromDB();
@@ -69,17 +61,14 @@ public class FavoritesFragment extends Fragment {
                 } else {
                     CurrentUser.getInstance().getUser().addFavorite(product);
                 }
-                CurrentUser.getInstance().getUser().updateUser(firebaseDB);
 
                 favorites_RV_products.getAdapter().notifyItemChanged(position);
-//                favorites_RV_products.getAdapter().notifyItemRemoved(position);
                 initProductRV();
             }
 
             @Override
             public void itemClicked(Product product, int position) {
                 if (getProductCallback != null) {
-//                    Toast.makeText(getContext(), "position:  " + position, Toast.LENGTH_SHORT).show();
                     getProductCallback.getProduct(product);
                 }
             }
@@ -87,7 +76,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void readAllFavoritesProductsFromDB() {
-        DatabaseReference productsRef = firebaseDB.getReference("Products");
+        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
         productsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
