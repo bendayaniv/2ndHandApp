@@ -12,8 +12,8 @@ public class CurrentUser {
     private static CurrentUser instance = null;
     private User user;
     private String currentCategory;
-    private ArrayList<Product> currentShowingProducts = new ArrayList<>();
     private String lastProductId;
+    private String lastSortStyle;
 
 
     private CurrentUser() {
@@ -42,6 +42,7 @@ public class CurrentUser {
     public CurrentUser removeUser() {
         this.user = null;
         setCurrentCategory("All");
+        setLastSortStyle(null);
         return this;
     }
 
@@ -63,6 +64,15 @@ public class CurrentUser {
 
     public CurrentUser setLastProductId(String lastProductId) {
         this.lastProductId = lastProductId;
+        return this;
+    }
+
+    public String getLastSortStyle() {
+        return lastSortStyle;
+    }
+
+    public CurrentUser setLastSortStyle(String lastSortStyle) {
+        this.lastSortStyle = lastSortStyle;
         return this;
     }
 }

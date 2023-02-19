@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
-import com.example.a2ndhandapp.Adapters.CategoryAutoCompleteTextAdapter;
+import com.example.a2ndhandapp.Adapters.StringAutoCompleteTextAdapter;
 import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
@@ -127,26 +127,22 @@ public class AddFragment extends Fragment {
         add_BTN_addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String productName = add_EDT_productName.getText().toString();
-                String productPrice = add_EDT_productPrice.getText().toString();
-                String productCategory = add_TIL_productCategory.getEditText().getText().toString();
-
-                // To make sure that the user can't upload more than one image at the same time
                 if (mUploadTask != null && mUploadTask.isInProgress()) {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
-                } else if (productName.isEmpty() || productPrice.isEmpty() || productCategory.isEmpty()) {
+                } else if (add_EDT_productName.getText().toString().isEmpty() ||
+                        add_EDT_productPrice.getText().toString().isEmpty() ||
+                        add_TIL_productCategory.getEditText().getText().toString().isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
-                } else if (!productPrice.chars().allMatch(Character::isDigit)) {
+                } else if (!add_EDT_productPrice.getText().toString().chars().allMatch(Character::isDigit)) {
                     Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
                 } else {
-                    uploadNewProduct(productName, productPrice, productCategory);
+                    uploadNewProduct();
                 }
             }
         });
     }
 
-    private void uploadNewProduct(String productName, String productPrice, String productCategory) {
+    private void uploadNewProduct() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Saving...");
         progressDialog.setCancelable(false);
@@ -159,7 +155,7 @@ public class AddFragment extends Fragment {
             mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            uploadToRealTime(productName, productPrice, productCategory, imageId);
+                            uploadToRealTime(imageId);
 
                             while (progressDialog.isShowing()) {
                                 progressDialog.dismiss();
@@ -184,7 +180,11 @@ public class AddFragment extends Fragment {
 
     }
 
-    private void uploadToRealTime(String productName, String productPrice, String productCategory, String imageId) {
+    private void uploadToRealTime(String imageId) {
+        String productName = add_EDT_productName.getText().toString().substring(0, 1).toUpperCase()
+                + add_EDT_productName.getText().toString().substring(1);
+        int productPrice = Integer.parseInt(add_EDT_productPrice.getText().toString());
+        String productCategory = add_TIL_productCategory.getEditText().getText().toString();
         String productDescription = add_EDT_productDescription.getText().toString();
 
         if (productDescription.equals("Add the product description here")) {
@@ -206,7 +206,7 @@ public class AddFragment extends Fragment {
 
     private void initView() {
         productImageButton();
-        CategoryAutoCompleteTextAdapter categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
+        StringAutoCompleteTextAdapter categoryAutoCompleteTextAdapter = new StringAutoCompleteTextAdapter(getContext(), categories);
         auto_complete_text.setAdapter(categoryAutoCompleteTextAdapter);
         addButtonFunction();
     }

@@ -6,7 +6,7 @@ public class Product {
 
     private String name;
     private String description;
-    private String price;
+    private int price;
     private String category;
     private String sellerName;
     private String sellerEmail;
@@ -18,7 +18,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String id, String name, String description, String price, String category,
+    public Product(String id, String name, String description, int price, String category,
                    String sellerName, String sellerEmail, ArrayList<String> images, String imageId) {
         this.id = id;
         this.name = name;
@@ -49,7 +49,7 @@ public class Product {
         return this;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
@@ -66,7 +66,7 @@ public class Product {
         return this.id.equals(product.getId()) &&
                 this.name.equals(product.getName()) &&
                 this.description.equals(product.getDescription()) &&
-                this.price.equals(product.getPrice()) &&
+                this.price == product.getPrice() &&
                 this.category.equals(product.getCategory());
     }
 

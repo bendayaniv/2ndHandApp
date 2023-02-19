@@ -5,6 +5,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="select_category">Select Category</string>
-    <string name="select_price">Select Price</string>
+    <string name="select_sort">Sort the Products</string>
 
 </resources>

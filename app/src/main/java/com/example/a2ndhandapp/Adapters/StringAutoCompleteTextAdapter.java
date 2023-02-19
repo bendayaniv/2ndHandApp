@@ -16,38 +16,38 @@ import com.example.a2ndhandapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryAutoCompleteTextAdapter extends ArrayAdapter<String> {
+public class StringAutoCompleteTextAdapter extends ArrayAdapter<String> {
 
-    private ArrayList<String> categoryListFull;
+    private ArrayList<String> stringListFull;
 
-    public CategoryAutoCompleteTextAdapter(@NonNull Context context, @NonNull List<String> categoryList) {
-        super(context, 0, categoryList);
-        categoryListFull = new ArrayList<>(categoryList);
+    public StringAutoCompleteTextAdapter(@NonNull Context context, @NonNull List<String> stringList) {
+        super(context, 0, stringList);
+        stringListFull = new ArrayList<>(stringList);
     }
 
     @NonNull
     @Override
     public Filter getFilter() {
-        return categoryFilter;
+        return stringFilter;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.category_list_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.string_list_item, parent, false);
         }
 
-        TextView categoryName = convertView.findViewById(R.id.category_view_name);
-        String category = getItem(position);
-        if (category != null) {
-            categoryName.setText(getItem(position));
+        TextView stringName = convertView.findViewById(R.id.string_view_name);
+        String string = getItem(position);
+        if (string != null) {
+            stringName.setText(getItem(position));
         }
 
         return convertView;
     }
 
-    private Filter categoryFilter = new Filter() {
+    private Filter stringFilter = new Filter() {
         /**
          * The filtering operation/logic.
          * @param constraint the constraint used to filter the data
@@ -58,10 +58,10 @@ public class CategoryAutoCompleteTextAdapter extends ArrayAdapter<String> {
             ArrayList<String> suggestions = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                suggestions.addAll(categoryListFull);
+                suggestions.addAll(stringListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (String item : categoryListFull) {
+                for (String item : stringListFull) {
                     if (item.toLowerCase().contains(filterPattern)) {
                         suggestions.add(item);
                     }
