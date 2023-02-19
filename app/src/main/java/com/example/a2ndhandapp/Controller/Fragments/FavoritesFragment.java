@@ -24,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class FavoritesFragment extends Fragment {
-    
+
     private RecyclerView favorites_RV_products;
     private ArrayList<Product> allMyFavoritesProducts = new ArrayList<>();
     private ProductItemAdapter productAdapter;
@@ -63,7 +63,6 @@ public class FavoritesFragment extends Fragment {
                 }
 
                 favorites_RV_products.getAdapter().notifyItemChanged(position);
-                initProductRV();
             }
 
             @Override

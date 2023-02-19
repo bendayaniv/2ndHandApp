@@ -2,16 +2,20 @@ package com.example.a2ndhandapp.Controller.Fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.webkit.MimeTypeMap;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,22 +24,28 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
 import com.example.a2ndhandapp.Adapters.CategoryAutoCompleteTextAdapter;
-import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
 public class AddFragment extends Fragment {
 
-    //    private FirebaseDatabase firebaseDB;
+    private static final int PICK_IMAGE_REQUEST = 1;
     private AppCompatEditText add_EDT_productName;
     private AppCompatEditText add_EDT_productPrice;
     private AppCompatEditText add_EDT_productDescription;
@@ -43,18 +53,12 @@ public class AddFragment extends Fragment {
     private MaterialButton add_BTN_addProdImg;
     private ImageView add_IMG_productImage;
     private MaterialButton add_BTN_addProduct;
-    private final int GALLERY_REQUEST_CODE = 1000;
     private ArrayList<String> categories = new ArrayList<>();
     private AutoCompleteTextView auto_complete_text;
-    //    private ArrayAdapter<String> adapterItems;
     private CategoryAutoCompleteTextAdapter categoryAutoCompleteTextAdapter;
-
-
-//    private GetProductCallback getProductCallback;
-//
-//    public void setGetProductCallback(GetProductCallback getProductCallback) {
-//        this.getProductCallback = getProductCallback;
-//    }
+    private ProgressBar mProgressBar;
+    private Uri mImageUri;
+    private StorageTask mUploadTask;
 
 
     private GoHomeCallback goHomeCallback;
@@ -62,16 +66,6 @@ public class AddFragment extends Fragment {
     public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
         this.goHomeCallback = goHomeCallback;
     }
-
-//    public void resetAutoCompleteText() {
-//        if (auto_complete_text != null) {
-////            adapterItems = new ArrayAdapter<String>(getContext(), R.layout.list_item, categories);
-//            setAdapterToAutoCompleteText();
-//            Log.d("TAG", "resetAutoCompleteText: is not null");
-//        } else {
-//            Log.d("TAG", "resetAutoCompleteText: auto_complete_text is null");
-//        }
-//    }
 
 
     @Nullable
@@ -93,65 +87,145 @@ public class AddFragment extends Fragment {
         add_BTN_addProdImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent iGallery = new Intent(Intent.ACTION_PICK); // ACTION_PICK - open gallery
-                iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI); // set the data to the gallery
-                startActivityForResult(iGallery, GALLERY_REQUEST_CODE); // start the activity with the gallery
+                openFileChooser();
             }
         });
     }
 
-    private void autoCompleteFunction() {
-        categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
+    /**
+     * Open file chooser to choose an image
+     */
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
 
-        auto_complete_text.setAdapter(categoryAutoCompleteTextAdapter);
+    /**
+     * This method is called when the user selects an image, and put the image in the ImageView
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        auto_complete_text.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getContext(), "Item: " + item, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            mImageUri = data.getData();
+            add_IMG_productImage.setImageURI(data.getData()); // set the image to the image view
+        }
+    }
+
+
+    /**
+     * Get the file extension from the Uri (image)
+     *
+     * @param uri
+     * @return the file extension
+     */
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContext().getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
     private void addButtonFunction() {
         add_BTN_addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String productName = add_EDT_productName.getText().toString();
                 String productPrice = add_EDT_productPrice.getText().toString();
-                String productDescription = add_EDT_productDescription.getText().toString();
                 String productCategory = add_TIL_productCategory.getEditText().getText().toString();
-//                String productImage = add_IMG_productImage.toString();
 
-                if (productName.isEmpty() || productPrice.isEmpty() || productCategory.isEmpty()) {
+                // To make sure that the user can't upload more than one image at the same time
+                if (mUploadTask != null && mUploadTask.isInProgress()) {
+                    Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+                } else if (productName.isEmpty() || productPrice.isEmpty() || productCategory.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 } else if (!productPrice.chars().allMatch(Character::isDigit)) {
+                    Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (productDescription.equals("Add the product description here")) {
-                        productDescription = "";
-                    }
-                    String newId = String.valueOf(Integer.valueOf(CurrentUser.getInstance().getLastProductId()));
-                    Product newProduct = new Product(newId, productName, productDescription, productPrice, productCategory,
-                            CurrentUser.getInstance().getUser().getName(), CurrentUser.getInstance().getUser().getEmail(), null);
-
-                    DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
-                    productsRef.getRef().child(String.valueOf(newProduct.getId())).setValue(newProduct);
-
-                    CurrentUser.getInstance().getUser().addProduct(newProduct);
-
-                    newId = String.valueOf((Integer.parseInt(newId)) + 1);
-                    CurrentUser.getInstance().setLastProductId(newId);
-                    goHomeCallback.goHome();
+                    uploadNewProduct(productName, productPrice, productCategory);
                 }
             }
         });
     }
 
+    private void uploadNewProduct(String productName, String productPrice, String productCategory) {
+        if (mImageUri != null) {
+            String imageId = System.currentTimeMillis() + "" + CurrentUser.getInstance().getUser().getName().trim()
+                    + "." + getFileExtension(mImageUri);
+            StorageReference fileReference = FirebaseStorage.getInstance().getReference("uploads").child(imageId);
+
+            mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressBar.setProgress(0);
+                                }
+                            }, 500);
+
+                            Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_LONG).show();
+
+                            uploadToRealTime(productName, productPrice, productCategory, imageId);
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                            mProgressBar.setProgress((int) progress);
+                        }
+                    });
+
+
+        } else {
+            Toast.makeText(getContext(), "No file selected", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void uploadToRealTime(String productName, String productPrice, String productCategory, String imageId) {
+        String productDescription = add_EDT_productDescription.getText().toString();
+
+        if (productDescription.equals("Add the product description here")) {
+            productDescription = "";
+        }
+        String newId = String.valueOf(Integer.valueOf(CurrentUser.getInstance().getLastProductId()));
+        Product newProduct = new Product(newId, productName, productDescription, productPrice, productCategory,
+                CurrentUser.getInstance().getUser().getName(), CurrentUser.getInstance().getUser().getEmail(), null, imageId);
+
+        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
+        productsRef.getRef().child(String.valueOf(newProduct.getId())).setValue(newProduct);
+
+        CurrentUser.getInstance().getUser().addProduct(newProduct);
+
+        newId = String.valueOf((Integer.parseInt(newId)) + 1);
+        CurrentUser.getInstance().setLastProductId(newId);
+        goHomeCallback.goHome();
+    }
+
     private void initView() {
         productImageButton();
 
-        autoCompleteFunction();
+        categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
+
+        auto_complete_text.setAdapter(categoryAutoCompleteTextAdapter);
 
         addButtonFunction();
     }
@@ -171,24 +245,13 @@ public class AddFragment extends Fragment {
         add_BTN_addProduct = view.findViewById(R.id.add_BTN_addProduct);
 
         auto_complete_text = view.findViewById(R.id.auto_complete_text);
-    }
 
-    /**
-     * This method is called when the activity is created, and find the views in the activity
-     *
-     * @param requestCode == the request code
-     * @param resultCode  == the result code
-     * @param data        == the data
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) { // if the result is ok
-            if (requestCode == GALLERY_REQUEST_CODE) { // if the request code is the gallery request code
-                add_IMG_productImage.setImageURI(data.getData()); // set the image to the image view
-            }
-        }
+        mProgressBar = view.findViewById(R.id.add_progress_bar);
+//        mProgressBar.getProgressDrawable().setColorFilter(
+//                Color.RED, PorterDuff.Mode.SRC_IN);
+        mProgressBar.setBackgroundColor(Color.GRAY);
+        mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.RED));
+//        mProgressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bg));
     }
 
     public void getCategoriesFromDB(DatabaseReference reference) {
@@ -198,7 +261,8 @@ public class AddFragment extends Fragment {
                 if (snapshot.exists()) {
                     categories.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
-                        categories.add(ds.getValue().toString());
+                        if (!ds.getValue().toString().equals("All"))
+                            categories.add(ds.getValue().toString());
                     }
                 }
             }

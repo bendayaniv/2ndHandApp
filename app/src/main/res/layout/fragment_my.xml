@@ -13,5 +13,4 @@
         android:weightSum="1"
         tools:listitem="@layout/my_product_item" />
 
-
 </RelativeLayout>

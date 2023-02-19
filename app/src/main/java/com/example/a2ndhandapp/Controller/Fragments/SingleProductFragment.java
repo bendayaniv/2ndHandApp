@@ -1,32 +1,44 @@
 package com.example.a2ndhandapp.Controller.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
 import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class SingleProductFragment extends Fragment {
-    private AppCompatImageView singleProduct_IMG_image;
+
+    private ImageView singleProduct_IMG_image;
     private AppCompatImageView singleProduct_IMG_delete;
     private MaterialTextView singleProduct_LBL_name;
     private MaterialTextView singleProduct_LBL_category;
@@ -34,10 +46,10 @@ public class SingleProductFragment extends Fragment {
     private MaterialTextView singleProduct_EDT_description;
     private MaterialTextView singleProduct_LBL_sellerDetails;
     private Product currentProduct;
-    //    private User seller;
     private GoHomeCallback goHomeCallback;
     private ArrayList<Product> myProducts;
     private ArrayList<Product> favorites;
+    private ProgressDialog progressDialog;
 
     public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
         this.goHomeCallback = goHomeCallback;
@@ -70,6 +82,13 @@ public class SingleProductFragment extends Fragment {
     }
 
     private void createProductDetails(View view) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Uploading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        uploadImage();
+
         singleProduct_LBL_name.setText(currentProduct.getName());
         singleProduct_LBL_category.setText(currentProduct.getCategory());
         singleProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
@@ -80,26 +99,63 @@ public class SingleProductFragment extends Fragment {
         }
         singleProduct_LBL_sellerDetails.setText("Contact " + currentProduct.getSellerName() +
                 ": " + currentProduct.getSellerEmail());
-        Glide.
-                with(this)
-                .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
-                .placeholder(R.drawable.temporary_img)
-                .into((ImageView) view.findViewById(R.id.singleProduct_IMG_image));
+    }
+
+    private void uploadImage() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + currentProduct.getImageId());
+
+        try {
+            File localFile = File.createTempFile("tempFile", ".jpg");
+            storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    Toast.makeText(getContext(), "Success to download image", Toast.LENGTH_SHORT).show();
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    singleProduct_IMG_image.setImageBitmap(bitmap);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    Toast.makeText(getContext(), "Failed to download image", Toast.LENGTH_SHORT).show();
+                    singleProduct_IMG_image.setImageResource(R.drawable.temporary_img);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void creatingDeletePart() {
         singleProduct_IMG_delete.setOnClickListener(v -> {
 
-            removeDeletedProductFromUsersWhoLikeHim();
+            StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+            StorageReference imageRef = mStorageRef.child(currentProduct.getImageId());
 
-            // Remove the product from the user's list of products.
-            CurrentUser.getInstance().getUser().removeProduct(currentProduct);
+            imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    removeDeletedProductFromUsersWhoLikeHim();
 
-            DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Products");
+                    // Remove the product from the user's list of products.
+                    CurrentUser.getInstance().getUser().removeProduct(currentProduct);
 
-            productRef.getRef().child(String.valueOf(currentProduct.getId())).removeValue();
+                    DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Products");
 
-            goHomeCallback.goHome();
+                    productRef.getRef().child(String.valueOf(currentProduct.getId())).removeValue();
+
+                    Toast.makeText(getContext(), "Item deleted", Toast.LENGTH_SHORT).show();
+
+                    goHomeCallback.goHome();
+
+                }
+            });
         });
     }
 

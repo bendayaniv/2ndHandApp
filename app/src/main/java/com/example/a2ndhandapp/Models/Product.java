@@ -12,14 +12,14 @@ public class Product {
     private String sellerEmail;
     private ArrayList<String> images;
     private String id;
-    private static int counter = 0;
+    private String imageId;
 
 
     public Product() {
     }
 
     public Product(String id, String name, String description, String price, String category,
-                   String sellerName, String sellerEmail, ArrayList<String> images) {
+                   String sellerName, String sellerEmail, ArrayList<String> images, String imageId) {
         this.id = id;
         this.name = name;
         setDescription(description);
@@ -28,6 +28,7 @@ public class Product {
         this.sellerName = sellerName;
         this.sellerEmail = sellerEmail;
         this.images = images;
+        this.imageId = imageId;
     }
 
     public String getName() {
@@ -52,11 +53,6 @@ public class Product {
         return price;
     }
 
-    public Product setPrice(String price) {
-        this.price = price;
-        return this;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -78,27 +74,8 @@ public class Product {
         return sellerName;
     }
 
-    public Product setSellerName(String sellerName) {
-        this.sellerName = sellerName;
-        return this;
-    }
-
     public String getSellerEmail() {
         return sellerEmail;
-    }
-
-    public Product setSellerEmail(String sellerEmail) {
-        this.sellerEmail = sellerEmail;
-        return this;
-    }
-
-    public ArrayList<String> getImages() {
-        return images;
-    }
-
-    public Product setImages(ArrayList<String> images) {
-        this.images = images;
-        return this;
     }
 
     public String getId() {
@@ -110,9 +87,8 @@ public class Product {
         return this;
     }
 
-//    public void removeProductFromDB(FirebaseDatabase firebaseDB) {
-//        DatabaseReference productRef = firebaseDB.getReference("Products");
-//
-//        productRef.getRef().child(String.valueOf(this.id)).removeValue();
-//    }
+    public String getImageId() {
+        return imageId;
+    }
+
 }

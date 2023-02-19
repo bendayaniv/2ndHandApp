@@ -64,12 +64,6 @@ public class HomeFragment extends Fragment {
                     CurrentUser.getInstance().getUser().addFavorite(product);
                 }
                 home_RV_products.getAdapter().notifyItemChanged(position);
-
-                // Is here for removing right away visually the product from the
-                // main 'page' in case we like this product
-                // (every product that we like will be removed from the main 'page')
-//                home_RV_products.getAdapter().notifyItemRemoved(position);
-                initProductRV();
             }
 
             @Override

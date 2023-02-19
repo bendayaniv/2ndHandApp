@@ -165,7 +165,8 @@ public class LogInOutFragment extends Fragment {
                                                              if (products.size() == 0) {
                                                                  CurrentUser.getInstance().setLastProductId(String.valueOf(0));
                                                              } else {
-                                                                 CurrentUser.getInstance().setLastProductId(products.get(products.size() - 1).getId());
+                                                                 int newIdNumber = Integer.parseInt(products.get(products.size() - 1).getId()) + 1;
+                                                                 CurrentUser.getInstance().setLastProductId(String.valueOf(newIdNumber));
                                                              }
                                                          } else {
                                                              CurrentUser.getInstance().setLastProductId(String.valueOf(0));
@@ -177,8 +178,6 @@ public class LogInOutFragment extends Fragment {
                                                      public void onCancelled(@NonNull DatabaseError error) {
 
                                                      }
-
-
                                                  }
         );
         if (goHomeCallback != null) {

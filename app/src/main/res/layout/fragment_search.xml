@@ -14,5 +14,4 @@
         android:paddingStart="30dp"
         tools:listitem="@layout/search_category" />
 
-
 </RelativeLayout>

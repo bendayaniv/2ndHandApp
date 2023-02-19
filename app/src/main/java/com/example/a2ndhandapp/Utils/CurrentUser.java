@@ -1,7 +1,6 @@
 package com.example.a2ndhandapp.Utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
@@ -66,19 +65,4 @@ public class CurrentUser {
         this.lastProductId = lastProductId;
         return this;
     }
-
-//    /**
-//     * This two methods are for inform the main activity that if the next screen will show some
-//     * products or not for the header
-//     *
-//     * @return
-//     */
-//    public ArrayList<Product> getCurrentShowingProducts() {
-//        return currentShowingProducts;
-//    }
-//
-//    public CurrentUser setCurrentShowingProducts(ArrayList<Product> currentShowingProducts) {
-//        this.currentShowingProducts = currentShowingProducts;
-//        return this;
-//    }
 }

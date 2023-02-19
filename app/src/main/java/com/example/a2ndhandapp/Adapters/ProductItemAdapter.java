@@ -2,21 +2,30 @@ package com.example.a2ndhandapp.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.a2ndhandapp.Interfaces.ProductItemCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textview.MaterialTextView;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.ProductViewHolder> {
@@ -65,11 +74,26 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
                 }
             }
         }
-        Glide.
-                with(ProductItemAdapter.this.context)
-                .load((String) null) // TODO:  change to currentProduct.getImages().get(0)
-                .placeholder(R.drawable.temporary_img)
-                .into(holder.product_IMG_image);
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + product.getImageId());
+
+        try {
+            File localFile = File.createTempFile("tempFile", ".jpg");
+            storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    holder.product_IMG_image.setImageBitmap(bitmap);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    holder.product_IMG_image.setImageResource(R.drawable.temporary_img);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -82,7 +106,8 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     }
 
     public class ProductViewHolder extends RecyclerView.ViewHolder {
-        private AppCompatImageView product_IMG_image;
+        //        private AppCompatImageView product_IMG_image;
+        private ImageView product_IMG_image;
         private AppCompatImageView product_IMG_favorite;
         private MaterialTextView product_LBL_name;
         private MaterialTextView product_LBL_category;
