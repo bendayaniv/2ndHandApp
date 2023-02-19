@@ -22,7 +22,7 @@ https://user-images.githubusercontent.com/52703125/219968752-cd9b2292-e01b-4664-
 ## Adding a Product
 https://user-images.githubusercontent.com/52703125/219968781-653999c0-e260-4a97-b1e4-9783986a7181.mp4
 
-## User Deletes a Product
+## Product Deletion
 https://user-images.githubusercontent.com/52703125/219968714-a9b0d04f-3d89-45c7-ad9b-a8f1ef7765c1.mp4
 
 ## Another User Deleted His Product - In Favorites and Not Favorites
