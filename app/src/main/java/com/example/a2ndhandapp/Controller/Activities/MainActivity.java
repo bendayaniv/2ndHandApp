@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private TextView textView_userName;
     private TextView textView_userEmail;
-    private ActionBarDrawerToggle toggle;
+
     /**
      * This callback is to inform the activity that the user has clicked on a product
      * to see its details
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             textView_userEmail.setText(CurrentUser.getInstance().getUser().getEmail());
         }
 
-        toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close); // Create a toggle for the drawer
         drawer.addDrawerListener(toggle); // Add the toggle to the drawer
         toggle.syncState(); // Sync the state of the drawer
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * This method is called when we click on one of the items in the navigation view
      */
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

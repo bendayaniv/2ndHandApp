@@ -1,6 +1,7 @@
 package com.example.a2ndhandapp.Controller.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,8 +26,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,8 +49,7 @@ public class SingleProductFragment extends Fragment {
     private MaterialTextView singleProduct_LBL_sellerDetails;
     private Product currentProduct;
     private GoHomeCallback goHomeCallback;
-    private ArrayList<Product> myProducts;
-    private ArrayList<Product> favorites;
+    private ArrayList<Product> favorites = new ArrayList<>();
     private ProgressDialog progressDialog;
 
     public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
@@ -135,28 +136,67 @@ public class SingleProductFragment extends Fragment {
     private void creatingDeletePart() {
         singleProduct_IMG_delete.setOnClickListener(v -> {
 
-            StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
-            StorageReference imageRef = mStorageRef.child(currentProduct.getImageId());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-            imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    removeDeletedProductFromUsersWhoLikeHim();
+            builder.setTitle("Delete item");
+            builder.setMessage("Are you sure you want to delete this item?");
+            builder.setIcon(R.drawable.delete_icon);
 
-                    // Remove the product from the user's list of products.
-                    CurrentUser.getInstance().getUser().removeProduct(currentProduct);
-
-                    DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Products");
-
-                    productRef.getRef().child(String.valueOf(currentProduct.getId())).removeValue();
-
-                    Toast.makeText(getContext(), "Item deleted", Toast.LENGTH_SHORT).show();
-
-                    goHomeCallback.goHome();
-
-                }
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                dialog.dismiss();
+                deleteProduct();
             });
+
+            builder.setNegativeButton("No", (dialog, which) -> {
+                dialog.dismiss();
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         });
+    }
+
+    private void deleteProduct() {
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+        StorageReference imageRef = mStorageRef.child(currentProduct.getImageId());
+
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Saving...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        removeDeletedProductFromUsersWhoLikeHim();
+
+                        // Remove the product from the user's list of products.
+                        CurrentUser.getInstance().getUser().removeProduct(currentProduct);
+
+                        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Products");
+
+                        productRef.getRef().child(String.valueOf(currentProduct.getId())).removeValue();
+
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+
+                        Toast.makeText(getContext(), "Item deleted", Toast.LENGTH_SHORT).show();
+
+                        goHomeCallback.goHome();
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                        Toast.makeText(getContext(), "Failed to delete item", Toast.LENGTH_SHORT).show();
+                    }
+                })
+        ;
     }
 
     private void creatingFavoritePart() {
@@ -203,16 +243,13 @@ public class SingleProductFragment extends Fragment {
      */
     private void removeDeletedProductFromUsersWhoLikeHim() {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
-        usersRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    if (favorites != null) {
-                        favorites.clear();
-                    } else {
-                        favorites = new ArrayList<>();
-                    }
                     for (DataSnapshot ds : snapshot.getChildren()) {
+                        favorites.clear();
                         User user = ds.getValue(User.class);
                         if (user != null) {
                             if (ds.child("myFavorites").exists()) {
@@ -227,9 +264,15 @@ public class SingleProductFragment extends Fragment {
                                     }
                                 }
                             }
+                            user.setMyFavorites(favorites);
                         }
                     }
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

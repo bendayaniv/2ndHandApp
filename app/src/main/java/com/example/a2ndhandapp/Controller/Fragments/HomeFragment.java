@@ -19,8 +19,10 @@ import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -46,24 +48,22 @@ public class HomeFragment extends Fragment {
 
         initProductRV();
 
+        readProductsByCategoryFromBD();
+
         return view;
     }
 
     private void initProductRV() {
-        readProductsByCategoryFromBD();
-
         productAdapter = new ProductItemAdapter(getContext(), productsByCategory);
         home_RV_products.setLayoutManager(new LinearLayoutManager(getContext()));
         home_RV_products.setAdapter(productAdapter);
+
         productAdapter.setProductItemCallback(new ProductItemCallback() {
             @Override
             public void favoriteClicked(Product product, int position) {
-                if (CurrentUser.getInstance().getUser().isFavorite(product)) {
-                    CurrentUser.getInstance().getUser().removeFavorite(product);
-                } else {
-                    CurrentUser.getInstance().getUser().addFavorite(product);
-                }
-                home_RV_products.getAdapter().notifyItemChanged(position);
+                CurrentUser.getInstance().getUser().addFavorite(product);
+                productsByCategory.remove(productsByCategory.get(position));
+                home_RV_products.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -83,11 +83,12 @@ public class HomeFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void readProductsByCategoryFromBD() {
         DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
-        productsRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
+
+        productsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                productsByCategory.clear();
                 if (snapshot.exists()) {
-                    productsByCategory.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Product product = ds.getValue(Product.class);
                         if (product != null) {
@@ -101,8 +102,13 @@ public class HomeFragment extends Fragment {
                             }
                         }
                     }
-                    productAdapter.notifyDataSetChanged();
                 }
+                productAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

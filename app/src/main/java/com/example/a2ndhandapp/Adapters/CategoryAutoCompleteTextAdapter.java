@@ -51,7 +51,6 @@ public class CategoryAutoCompleteTextAdapter extends ArrayAdapter<String> {
         /**
          * The filtering operation/logic.
          * @param constraint the constraint used to filter the data
-         * @return
          */
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {

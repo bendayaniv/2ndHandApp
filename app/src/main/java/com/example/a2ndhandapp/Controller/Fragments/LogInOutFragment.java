@@ -89,11 +89,10 @@ public class LogInOutFragment extends Fragment {
                         .setUid(mAuth.getCurrentUser().getUid());
                 if (!snapshot.child("Users").child(mAuth.getCurrentUser().getUid()).exists()) {
                     mDatabase.child("Users").child(newUser.getUid()).setValue(newUser);
-
+                    setCurrentUser(newUser);
                 } else {
                     alreadyIn();
                 }
-                CurrentUser.getInstance().setUser(newUser);
             }
 
             @Override
@@ -106,6 +105,34 @@ public class LogInOutFragment extends Fragment {
             goHomeCallback.goHome();
         }
 
+    }
+
+    private void setCurrentUser(User newUser) {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Product> products = new ArrayList<>();
+                if (snapshot.child("Products").exists()) {
+                    for (DataSnapshot ds : snapshot.child("Products").getChildren()) {
+                        products.add(ds.getValue(Product.class));
+                    }
+                    if (products.size() == 0) {
+                        CurrentUser.getInstance().setLastProductId(String.valueOf(0));
+                    } else {
+                        int newIdNumber = Integer.parseInt(products.get(products.size() - 1).getId()) + 1;
+                        CurrentUser.getInstance().setLastProductId(String.valueOf(newIdNumber));
+                    }
+                } else {
+                    CurrentUser.getInstance().setLastProductId(String.valueOf(0));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        CurrentUser.getInstance().setUser(newUser);
     }
 
 
@@ -124,8 +151,6 @@ public class LogInOutFragment extends Fragment {
     /**
      * In case that there is already user that logged in
      * and/or the user is already in the DB
-     * <p>
-     * //@param mDatabase
      */
     private void alreadyIn() {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -155,23 +180,7 @@ public class LogInOutFragment extends Fragment {
                                                              }
                                                              newUser.setMyProducts(myProducts);
                                                          }
-
-                                                         CurrentUser.getInstance().setUser(newUser);
-                                                         ArrayList<Product> products = new ArrayList<>();
-                                                         if (snapshot.child("Products").exists()) {
-                                                             for (DataSnapshot ds : snapshot.child("Products").getChildren()) {
-                                                                 products.add(ds.getValue(Product.class));
-                                                             }
-                                                             if (products.size() == 0) {
-                                                                 CurrentUser.getInstance().setLastProductId(String.valueOf(0));
-                                                             } else {
-                                                                 int newIdNumber = Integer.parseInt(products.get(products.size() - 1).getId()) + 1;
-                                                                 CurrentUser.getInstance().setLastProductId(String.valueOf(newIdNumber));
-                                                             }
-                                                         } else {
-                                                             CurrentUser.getInstance().setLastProductId(String.valueOf(0));
-                                                         }
-
+                                                         setCurrentUser(newUser);
                                                      }
 
                                                      @Override

@@ -1,5 +1,6 @@
 package com.example.a2ndhandapp.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,13 +50,14 @@ public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdap
         return myProductViewHolder;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull MyProductItemAdapter.MyProductViewHolder holder, int position) {
         Product currentProduct = getItem(position);
 
         holder.myProduct_LBL_name.setText(currentProduct.getName() + "");
         holder.myProduct_LBL_category.setText(currentProduct.getCategory() + "");
-        holder.myProduct_LBL_price.setText(currentProduct.getPrice() + " NIS₪");
+        holder.myProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + currentProduct.getImageId());
 

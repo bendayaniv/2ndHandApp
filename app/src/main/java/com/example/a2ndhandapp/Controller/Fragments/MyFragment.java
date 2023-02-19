@@ -82,16 +82,16 @@ public class MyFragment extends Fragment {
         productsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
+                allMyProducts.clear();
                 if (snapshot.exists()) {
-                    allMyProducts.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Product product = ds.getValue(Product.class);
                         if (CurrentUser.getInstance().getUser().isMyProduct(product)) {
                             allMyProducts.add(product);
                         }
                     }
-                    myProductAdapter.notifyDataSetChanged();
                 }
+                myProductAdapter.notifyDataSetChanged();
             }
         });
     }

@@ -18,8 +18,10 @@ import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -56,13 +58,9 @@ public class FavoritesFragment extends Fragment {
 
             @Override
             public void favoriteClicked(Product product, int position) {
-                if (CurrentUser.getInstance().getUser().isFavorite(product)) {
-                    CurrentUser.getInstance().getUser().removeFavorite(product);
-                } else {
-                    CurrentUser.getInstance().getUser().addFavorite(product);
-                }
-
-                favorites_RV_products.getAdapter().notifyItemChanged(position);
+                CurrentUser.getInstance().getUser().removeFavorite(product);
+                allMyFavoritesProducts.remove(allMyFavoritesProducts.get(position));
+                favorites_RV_products.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -75,20 +73,24 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void readAllFavoritesProductsFromDB() {
-        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
-        productsRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
-                if (snapshot.exists()) {
-                    allMyFavoritesProducts.clear();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allMyFavoritesProducts.clear();
+                if (snapshot.exists() && snapshot.child(CurrentUser.getInstance().getUser().getUid()).child("myFavorites").exists()) {
+                    for (DataSnapshot ds : snapshot.child(CurrentUser.getInstance().getUser().getUid()).child("myFavorites").getChildren()) {
                         Product product = ds.getValue(Product.class);
-                        if (CurrentUser.getInstance().getUser().isFavorite(product)) {
-                            allMyFavoritesProducts.add(product);
-                        }
+                        allMyFavoritesProducts.add(product);
                     }
-                    productAdapter.notifyDataSetChanged();
                 }
+                productAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

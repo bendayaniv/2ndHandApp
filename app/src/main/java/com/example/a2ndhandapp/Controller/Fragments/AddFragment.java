@@ -2,20 +2,17 @@ package com.example.a2ndhandapp.Controller.Fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,7 +33,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
@@ -53,12 +49,11 @@ public class AddFragment extends Fragment {
     private MaterialButton add_BTN_addProdImg;
     private ImageView add_IMG_productImage;
     private MaterialButton add_BTN_addProduct;
-    private ArrayList<String> categories = new ArrayList<>();
+    private final ArrayList<String> categories = new ArrayList<>();
     private AutoCompleteTextView auto_complete_text;
-    private CategoryAutoCompleteTextAdapter categoryAutoCompleteTextAdapter;
-    private ProgressBar mProgressBar;
     private Uri mImageUri;
     private StorageTask mUploadTask;
+    private ProgressDialog progressDialog;
 
 
     private GoHomeCallback goHomeCallback;
@@ -104,10 +99,6 @@ public class AddFragment extends Fragment {
 
     /**
      * This method is called when the user selects an image, and put the image in the ImageView
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -124,7 +115,6 @@ public class AddFragment extends Fragment {
     /**
      * Get the file extension from the Uri (image)
      *
-     * @param uri
      * @return the file extension
      */
     private String getFileExtension(Uri uri) {
@@ -157,6 +147,10 @@ public class AddFragment extends Fragment {
     }
 
     private void uploadNewProduct(String productName, String productPrice, String productCategory) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Saving...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         if (mImageUri != null) {
             String imageId = System.currentTimeMillis() + "" + CurrentUser.getInstance().getUser().getName().trim()
                     + "." + getFileExtension(mImageUri);
@@ -165,34 +159,24 @@ public class AddFragment extends Fragment {
             mUploadTask = fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressBar.setProgress(0);
-                                }
-                            }, 500);
-
-                            Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_LONG).show();
-
                             uploadToRealTime(productName, productPrice, productCategory, imageId);
 
+                            while (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_LONG).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            while (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+
                             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                            mProgressBar.setProgress((int) progress);
-                        }
                     });
-
 
         } else {
             Toast.makeText(getContext(), "No file selected", Toast.LENGTH_SHORT).show();
@@ -222,11 +206,8 @@ public class AddFragment extends Fragment {
 
     private void initView() {
         productImageButton();
-
-        categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
-
+        CategoryAutoCompleteTextAdapter categoryAutoCompleteTextAdapter = new CategoryAutoCompleteTextAdapter(getContext(), categories);
         auto_complete_text.setAdapter(categoryAutoCompleteTextAdapter);
-
         addButtonFunction();
     }
 
@@ -243,15 +224,7 @@ public class AddFragment extends Fragment {
         add_IMG_productImage = view.findViewById(R.id.add_IMG_productImage);
         add_BTN_addProdImg = view.findViewById(R.id.add_BTN_addProdImg);
         add_BTN_addProduct = view.findViewById(R.id.add_BTN_addProduct);
-
         auto_complete_text = view.findViewById(R.id.auto_complete_text);
-
-        mProgressBar = view.findViewById(R.id.add_progress_bar);
-//        mProgressBar.getProgressDrawable().setColorFilter(
-//                Color.RED, PorterDuff.Mode.SRC_IN);
-        mProgressBar.setBackgroundColor(Color.GRAY);
-        mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.RED));
-//        mProgressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bg));
     }
 
     public void getCategoriesFromDB(DatabaseReference reference) {

@@ -106,7 +106,6 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     }
 
     public class ProductViewHolder extends RecyclerView.ViewHolder {
-        //        private AppCompatImageView product_IMG_image;
         private ImageView product_IMG_image;
         private AppCompatImageView product_IMG_favorite;
         private MaterialTextView product_LBL_name;
