@@ -58,6 +58,11 @@ public class CurrentUser {
         return this;
     }
 
+    /**
+     * To know what id to give to the next product
+     *
+     * @return
+     */
     public String getLastProductId() {
         return lastProductId;
     }
@@ -67,6 +72,11 @@ public class CurrentUser {
         return this;
     }
 
+    /**
+     * To know what was the last sort style so when going back to Home page to know how to sort
+     *
+     * @return
+     */
     public String getLastSortStyle() {
         return lastSortStyle;
     }

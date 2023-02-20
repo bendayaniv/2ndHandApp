@@ -58,22 +58,34 @@ public class User {
         return this;
     }
 
+    /**
+     * Adding product to user's MyProducts list
+     *
+     * @param product
+     * @return
+     */
     public User addProduct(Product product) {
         if (this.myProducts == null) {
             this.myProducts = new ArrayList<>();
         }
         this.myProducts.add(product);
+
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").getRef()
                 .child(this.getUid());
         userRef.setValue(this);
-
         return this;
     }
 
+
+    /**
+     * Removing product from user's MyProducts list
+     *
+     * @param product
+     * @return
+     */
     public User removeProduct(Product product) {
         if (this.myProducts != null) {
             for (int i = 0; i < myProducts.size(); i++) {
-//                if (theSameProduct(product, i)) {
                 if (this.myProducts.get(i).theSameProduct(product)) {
                     this.myProducts.remove(this.myProducts.get(i));
                     break;
@@ -86,6 +98,13 @@ public class User {
         return this;
     }
 
+
+    /**
+     * Checking if product is belong to user
+     *
+     * @param product
+     * @return
+     */
     public boolean isMyProduct(Product product) {
         if (this.myProducts != null) {
             for (int i = 0; i < myProducts.size(); i++) {
@@ -105,17 +124,30 @@ public class User {
         return this;
     }
 
+    /**
+     * Adding product to user's favorites list
+     *
+     * @param product
+     * @return
+     */
     public User addFavorite(Product product) {
         if (this.myFavorites == null) {
             this.myFavorites = new ArrayList<>();
         }
         this.myFavorites.add(product);
+
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").getRef()
                 .child(this.getUid());
         userRef.setValue(this);
         return this;
     }
 
+    /**
+     * Removing product from user's favorites list
+     *
+     * @param product
+     * @return
+     */
     public User removeFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
@@ -131,6 +163,12 @@ public class User {
         return this;
     }
 
+    /**
+     * Checking if a product is on the user favorites
+     *
+     * @param product
+     * @return
+     */
     public boolean isFavorite(Product product) {
         if (this.myFavorites != null) {
             for (int i = 0; i < myFavorites.size(); i++) {
@@ -140,4 +178,5 @@ public class User {
         }
         return false;
     }
+
 }

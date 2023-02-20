@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
+import com.example.a2ndhandapp.Interfaces.GoToSplashActivityCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
@@ -37,10 +37,10 @@ public class LogInOutFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
     private DatabaseReference mDatabase;
-    private GoHomeCallback goHomeCallback;
+    private GoToSplashActivityCallback goToSplashActivityCallback;
 
-    public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
-        this.goHomeCallback = goHomeCallback;
+    public void setGoToSplashActivityCallback(GoToSplashActivityCallback goToSplashActivityCallback) {
+        this.goToSplashActivityCallback = goToSplashActivityCallback;
     }
 
     @Nullable
@@ -73,6 +73,11 @@ public class LogInOutFragment extends Fragment {
             }
     );
 
+    /**
+     * Coming after the login/signup/the enter to the app (in case the last user didn't log out)
+     *
+     * @param result
+     */
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             /**
@@ -101,12 +106,17 @@ public class LogInOutFragment extends Fragment {
             }
         });
 
-        if (goHomeCallback != null) {
-            goHomeCallback.goHome();
+        if (goToSplashActivityCallback != null) {
+            goToSplashActivityCallback.goToSplashActivityCallback();
         }
 
     }
 
+    /**
+     * Setting the current user after login/signup
+     *
+     * @param newUser
+     */
     private void setCurrentUser(User newUser) {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -136,6 +146,9 @@ public class LogInOutFragment extends Fragment {
     }
 
 
+    /**
+     * The login method
+     */
     private void login() {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -189,8 +202,8 @@ public class LogInOutFragment extends Fragment {
                                                      }
                                                  }
         );
-        if (goHomeCallback != null) {
-            goHomeCallback.goHome();
+        if (goToSplashActivityCallback != null) {
+            goToSplashActivityCallback.goToSplashActivityCallback();
         }
     }
 }

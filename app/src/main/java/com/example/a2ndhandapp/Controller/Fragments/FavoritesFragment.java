@@ -72,6 +72,9 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
+    /**
+     * Getting all the favorite products of the current user
+     */
     private void readAllFavoritesProductsFromDB() {
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
 

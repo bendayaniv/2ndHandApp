@@ -62,6 +62,12 @@ public class Product {
         return this;
     }
 
+    /**
+     * Checking if two products are the same
+     *
+     * @param product
+     * @return
+     */
     public boolean theSameProduct(Product product) {
         return this.id.equals(product.getId()) &&
                 this.name.equals(product.getName()) &&

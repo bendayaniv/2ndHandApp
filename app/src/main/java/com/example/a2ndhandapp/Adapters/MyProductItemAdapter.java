@@ -26,6 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This adapter is for the RV of the products  in the My page
+ */
 public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdapter.MyProductViewHolder> {
 
     private Context context;
@@ -59,6 +62,7 @@ public class MyProductItemAdapter extends RecyclerView.Adapter<MyProductItemAdap
         holder.myProduct_LBL_category.setText(currentProduct.getCategory() + "");
         holder.myProduct_LBL_price.setText(currentProduct.getPrice() + "₪");
 
+        // The uploading image part from Storage Firebase
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + currentProduct.getImageId());
 
         try {

@@ -77,6 +77,9 @@ public class MyFragment extends Fragment {
     }
 
 
+    /**
+     * Getting all the current user's products from the DB
+     */
     private void readAllThisUserProductsFromDB() {
         DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
         productsRef.get().addOnCompleteListener(task -> {

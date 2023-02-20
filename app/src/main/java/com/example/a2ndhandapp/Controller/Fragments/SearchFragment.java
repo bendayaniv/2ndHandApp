@@ -45,7 +45,7 @@ public class SearchFragment extends Fragment {
     private void initCategoryRV() {
         DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
         getCategoriesFromDB(categoriesRef);
-//
+
         categoryAdapter = new CategoryAdapter(getContext(), categories);
 
         search_RV_categories.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -63,6 +63,11 @@ public class SearchFragment extends Fragment {
     }
 
 
+    /**
+     * Getting the categories options from the DB
+     *
+     * @param reference
+     */
     public void getCategoriesFromDB(DatabaseReference reference) {
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

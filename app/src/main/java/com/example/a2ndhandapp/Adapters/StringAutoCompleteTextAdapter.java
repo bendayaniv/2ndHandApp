@@ -16,6 +16,9 @@ import com.example.a2ndhandapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This adapter is for the auto complete text view by string
+ */
 public class StringAutoCompleteTextAdapter extends ArrayAdapter<String> {
 
     private ArrayList<String> stringListFull;

@@ -19,6 +19,9 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 
+/**
+ * This adapter is for the RV of the categories options in the Search page
+ */
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private Context context;

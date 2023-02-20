@@ -22,7 +22,7 @@ import com.example.a2ndhandapp.Controller.Fragments.LogInOutFragment;
 import com.example.a2ndhandapp.Controller.Fragments.MyFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SearchFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SingleProductFragment;
-import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
+import com.example.a2ndhandapp.Interfaces.GoToSplashActivityCallback;
 import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.Models.Product;
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     GetProductCallback getProductCallback = new GetProductCallback() {
         @Override
         public void getProduct(Product product) {
-            // TODO - send to "ProductFragment" the specific product
             if (singleProductFragment != null) {
                 singleProductFragment.setCurrentProduct(product);
                 getSupportActionBar().setTitle(product.getName()); // Set the title of the toolbar
@@ -84,13 +83,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     /**
-     * This callback is to inform the activity that the user has logged/signed in
-     * and to start the splash activity
-     * It is for after the user has logged/signed in or deleted onw of his products
+     * This method is for after we adding a product or sign out - to go to Splash Activity,
+     * and after that continue
      */
-    GoHomeCallback goHomeCallback = new GoHomeCallback() {
+    GoToSplashActivityCallback goHomeCallback = new GoToSplashActivityCallback() {
         @Override
-        public void goHome() {
+        public void goToSplashActivityCallback() {
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
             finish();
         }
@@ -165,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void createFragments() {
         singleProductFragment = new SingleProductFragment();
-        singleProductFragment.setGoHomeCallback(goHomeCallback);
+        singleProductFragment.setGoToSplashActivityCallback(goHomeCallback);
 
         homeFragment = new HomeFragment();
         homeFragment.setGetProductCallback(getProductCallback);
@@ -180,10 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myFragment.setGetProductCallback(getProductCallback);
 
         addFragment = new AddFragment();
-        addFragment.setGoHomeCallback(goHomeCallback);
+        addFragment.setGoToSplashActivityCallback(goHomeCallback);
 
         logInOutFragment = new LogInOutFragment();
-        logInOutFragment.setGoHomeCallback(goHomeCallback);
+        logInOutFragment.setGoToSplashActivityCallback(goHomeCallback);
     }
 
     /**
@@ -231,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
-     * This method is called when the back button is pressed
+     * This method is for the drawer - when it open/close
      */
     @Override
     public void onBackPressed() {

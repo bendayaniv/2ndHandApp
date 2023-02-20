@@ -28,6 +28,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This adapter is for the RV of the products in both Home and Favorites pages
+ */
 public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.ProductViewHolder> {
 
     private Context context;
@@ -75,6 +78,7 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
             }
         }
 
+        // The uploading image part from Storage Firebase
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + product.getImageId());
 
         try {

@@ -73,4 +73,24 @@ public class SplashActivity extends AppCompatActivity {
     private void findViews() {
         splash_IMG_logo = findViewById(R.id.splash_IMG_logo);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

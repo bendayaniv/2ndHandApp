@@ -21,7 +21,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
 import com.example.a2ndhandapp.Adapters.StringAutoCompleteTextAdapter;
-import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
+import com.example.a2ndhandapp.Interfaces.GoToSplashActivityCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
 import com.example.a2ndhandapp.Utils.CurrentUser;
@@ -54,12 +54,10 @@ public class AddFragment extends Fragment {
     private Uri mImageUri;
     private StorageTask mUploadTask;
     private ProgressDialog progressDialog;
+    private GoToSplashActivityCallback goToSplashActivityCallback;
 
-
-    private GoHomeCallback goHomeCallback;
-
-    public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
-        this.goHomeCallback = goHomeCallback;
+    public void setGoToSplashActivityCallback(GoToSplashActivityCallback goToSplashActivityCallback) {
+        this.goToSplashActivityCallback = goToSplashActivityCallback;
     }
 
 
@@ -78,6 +76,9 @@ public class AddFragment extends Fragment {
         return view;
     }
 
+    /**
+     * The functionality of the "Add Image" button
+     */
     private void productImageButton() {
         add_BTN_addProdImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +124,9 @@ public class AddFragment extends Fragment {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
+    /**
+     * The functionality of the "Add" button
+     */
     private void addButtonFunction() {
         add_BTN_addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +146,10 @@ public class AddFragment extends Fragment {
         });
     }
 
+    /**
+     * Uploading the new product to the Storage in Firebase
+     * In case we success - wo move to upload to RealTime DB in Firebase (different method)
+     */
     private void uploadNewProduct() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Saving...");
@@ -180,6 +188,11 @@ public class AddFragment extends Fragment {
 
     }
 
+    /**
+     * Upload the new product to the RealTime DB in Firebase
+     *
+     * @param imageId
+     */
     private void uploadToRealTime(String imageId) {
         String productName = add_EDT_productName.getText().toString().substring(0, 1).toUpperCase()
                 + add_EDT_productName.getText().toString().substring(1);
@@ -201,7 +214,7 @@ public class AddFragment extends Fragment {
 
         newId = String.valueOf((Integer.parseInt(newId)) + 1);
         CurrentUser.getInstance().setLastProductId(newId);
-        goHomeCallback.goHome();
+        goToSplashActivityCallback.goToSplashActivityCallback();
     }
 
     private void initView() {
@@ -227,6 +240,11 @@ public class AddFragment extends Fragment {
         auto_complete_text = view.findViewById(R.id.auto_complete_text);
     }
 
+    /**
+     * Getting all the category options from the DB
+     *
+     * @param reference
+     */
     public void getCategoriesFromDB(DatabaseReference reference) {
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

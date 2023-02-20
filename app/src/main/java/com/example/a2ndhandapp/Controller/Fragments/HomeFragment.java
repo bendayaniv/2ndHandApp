@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -79,6 +80,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * The logic behind the sort options
+     *
+     * @param sortStyle == the option the user choose to sort the products
+     */
     @SuppressLint("NotifyDataSetChanged")
     private void optionsToSortProducts(String sortStyle) {
         switch (sortStyle) {
@@ -112,7 +118,7 @@ public class HomeFragment extends Fragment {
                 Collections.sort(productsByCategory, new Comparator<Product>() {
                     @Override
                     public int compare(Product o1, Product o2) {
-                        return o1.getName().compareTo(o2.getName());
+                        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
                     }
                 });
                 break;
@@ -120,7 +126,7 @@ public class HomeFragment extends Fragment {
                 Collections.sort(productsByCategory, new Comparator<Product>() {
                     @Override
                     public int compare(Product o1, Product o2) {
-                        return o2.getName().compareTo(o1.getName());
+                        return o2.getName().toLowerCase().compareTo(o1.getName().toLowerCase());
                     }
                 });
                 break;
@@ -154,10 +160,12 @@ public class HomeFragment extends Fragment {
     private void findViews(View view) {
         home_RV_products = view.findViewById(R.id.home_RV_products);
         home_auto_complete_text_sort = view.findViewById(R.id.home_auto_complete_text_sort);
-//        home_abc_auto_complete_text = view.findViewById(R.id.home_abc_auto_complete_text);
     }
 
 
+    /**
+     * Reading by category all the products who belong
+     */
     @SuppressLint("NotifyDataSetChanged")
     public void readProductsByCategoryFromBD() {
         DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
@@ -181,7 +189,7 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 }
-                if(CurrentUser.getInstance().getLastSortStyle() != null){
+                if (CurrentUser.getInstance().getLastSortStyle() != null) {
                     optionsToSortProducts(CurrentUser.getInstance().getLastSortStyle());
                 }
                 productAdapter.notifyDataSetChanged();
@@ -194,6 +202,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Getting all the sort options
+     */
     public void getSortOptionsFromDB() {
         DatabaseReference pricesSortRef = FirebaseDatabase.getInstance().getReference("SortOptions");
 

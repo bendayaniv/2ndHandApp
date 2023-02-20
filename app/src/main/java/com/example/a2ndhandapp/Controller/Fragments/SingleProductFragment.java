@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 
-import com.example.a2ndhandapp.Interfaces.GoHomeCallback;
+import com.example.a2ndhandapp.Interfaces.GoToSplashActivityCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
@@ -48,12 +48,12 @@ public class SingleProductFragment extends Fragment {
     private MaterialTextView singleProduct_EDT_description;
     private MaterialTextView singleProduct_LBL_sellerDetails;
     private Product currentProduct;
-    private GoHomeCallback goHomeCallback;
+    private GoToSplashActivityCallback goToSplashActivityCallback;
     private ArrayList<Product> favorites = new ArrayList<>();
     private ProgressDialog progressDialog;
 
-    public void setGoHomeCallback(GoHomeCallback goHomeCallback) {
-        this.goHomeCallback = goHomeCallback;
+    public void setGoToSplashActivityCallback(GoToSplashActivityCallback goToSplashActivityCallback) {
+        this.goToSplashActivityCallback = goToSplashActivityCallback;
     }
 
     @Nullable
@@ -102,6 +102,9 @@ public class SingleProductFragment extends Fragment {
                 ": " + currentProduct.getSellerEmail());
     }
 
+    /**
+     * This method is for the download image for the specific product
+     */
     private void uploadImage() {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("uploads/" + currentProduct.getImageId());
 
@@ -133,6 +136,9 @@ public class SingleProductFragment extends Fragment {
         }
     }
 
+    /**
+     * This method is for creating the delete option
+     */
     private void creatingDeletePart() {
         singleProduct_IMG_delete.setOnClickListener(v -> {
 
@@ -156,6 +162,9 @@ public class SingleProductFragment extends Fragment {
         });
     }
 
+    /**
+     * This method is for the delete option
+     */
     private void deleteProduct() {
         StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         StorageReference imageRef = mStorageRef.child(currentProduct.getImageId());
@@ -183,7 +192,7 @@ public class SingleProductFragment extends Fragment {
 
                         Toast.makeText(getContext(), "Item deleted", Toast.LENGTH_SHORT).show();
 
-                        goHomeCallback.goHome();
+                        goToSplashActivityCallback.goToSplashActivityCallback();
 
                     }
                 })
@@ -199,6 +208,9 @@ public class SingleProductFragment extends Fragment {
         ;
     }
 
+    /**
+     * This method is for creating the favorite option
+     */
     private void creatingFavoritePart() {
         if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
             singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
@@ -210,6 +222,9 @@ public class SingleProductFragment extends Fragment {
         });
     }
 
+    /**
+     * This method is for the favorite option
+     */
     private void favoriteClick() {
         if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
             CurrentUser.getInstance().getUser().removeFavorite(currentProduct);
