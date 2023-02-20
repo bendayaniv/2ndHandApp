@@ -13,7 +13,7 @@ An application for buying and selling second-hand products
 ## Sign Up 
 https://user-images.githubusercontent.com/52703125/220127182-c47f04e6-3cc3-460f-b348-0a4b26f0ba7e.mp4
 
-## Login and Tour the Application
+## Sign In, Tour the Application and Sign Out
 https://user-images.githubusercontent.com/52703125/220127243-74c365f7-d7a3-4fba-b7fb-f41874243c04.mp4
 
 ## Adding to and Removing from Favorites
