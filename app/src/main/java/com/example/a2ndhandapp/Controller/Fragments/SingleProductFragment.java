@@ -50,6 +50,7 @@ public class SingleProductFragment extends Fragment {
     private Product currentProduct;
     private GoToSplashActivityCallback goToSplashActivityCallback;
     private ArrayList<Product> favorites = new ArrayList<>();
+    private ArrayList<Product> allProducts = new ArrayList<>();
     private ProgressDialog progressDialog;
 
     public void setGoToSplashActivityCallback(GoToSplashActivityCallback goToSplashActivityCallback) {
@@ -226,13 +227,33 @@ public class SingleProductFragment extends Fragment {
      * This method is for the favorite option
      */
     private void favoriteClick() {
-        if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
-            CurrentUser.getInstance().getUser().removeFavorite(currentProduct);
-            singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
+        if (productExist()) {
+            if (CurrentUser.getInstance().getUser().isFavorite(currentProduct)) {
+                CurrentUser.getInstance().getUser().removeFavorite(currentProduct);
+                singleProduct_IMG_delete.setImageResource(R.drawable.white_heart);
+            } else {
+                CurrentUser.getInstance().getUser().addFavorite(currentProduct);
+                singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
+            }
         } else {
-            CurrentUser.getInstance().getUser().addFavorite(currentProduct);
-            singleProduct_IMG_delete.setImageResource(R.drawable.red_heart);
+            Toast.makeText(getContext(), "This product is not exist anymore", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * This method is for checking if the current product is exist
+     *
+     * @return
+     */
+    private boolean productExist() {
+        getAllProductsFromDB();
+        if (this.allProducts != null && this.allProducts.size() > 0) {
+            for (int i = 0; i < allProducts.size(); i++) {
+                if (this.allProducts.get(i).theSameProduct(currentProduct))
+                    return true;
+            }
+        }
+        return false;
     }
 
     private void findViews(View view) {
@@ -250,6 +271,29 @@ public class SingleProductFragment extends Fragment {
         if (singleProduct_EDT_description != null) {
             singleProduct_EDT_description.setText(product.getDescription());
         }
+    }
+
+    private void getAllProductsFromDB() {
+        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Products");
+
+        productsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Product product = ds.getValue(Product.class);
+                        if (product != null) {
+                            allProducts.add(product);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
