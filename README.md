@@ -10,6 +10,12 @@ An application for buying and selling second-hand products
 * The user can mark products he liked (which will go to a separate page).
 * The user can enter the product page by clicking on it, where he will find more details about the product (such as the product description and the contact information that posted the product).
 
+## Firebase Servers in Use
+
+* RealTime DB
+* Authentication
+* Storage
+
 ## Sign Up 
 https://user-images.githubusercontent.com/52703125/220127182-c47f04e6-3cc3-460f-b348-0a4b26f0ba7e.mp4
 
