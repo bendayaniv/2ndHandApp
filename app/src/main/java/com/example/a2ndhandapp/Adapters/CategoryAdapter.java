@@ -12,9 +12,10 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
+import com.example.a2ndhandapp.Interfaces.ChoosingCategorySearchCallback;
 import com.example.a2ndhandapp.Models.User;
 import com.example.a2ndhandapp.R;
+import com.example.a2ndhandapp.Utils.CurrentUser;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     private Context context;
     private ArrayList<String> categories;
-    private GetCategoryCallback categoryCallback;
+    private ChoosingCategorySearchCallback choosingCategorySearchCallback;
     private int[] categoryImages = {R.drawable.all_icon, R.drawable.accessory_icon, R.drawable.books_icon,
             R.drawable.clothes_icon, R.drawable.electronics_icon, R.drawable.home_icon,
             R.drawable.shoes_icon, R.drawable.sports_icon, R.drawable.toys_icon,
@@ -38,8 +39,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         this.categories = categories;
     }
 
-    public CategoryAdapter setCategoryCallback(GetCategoryCallback categoryCallback) {
-        this.categoryCallback = categoryCallback;
+    public CategoryAdapter setChoosingCategorySearchCallback(ChoosingCategorySearchCallback choosingCategorySearchCallback) {
+        this.choosingCategorySearchCallback = choosingCategorySearchCallback;
         return this;
     }
 
@@ -86,9 +87,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             category_LBL_name = itemView.findViewById(R.id.category_LBL_name);
 
             itemView.setOnClickListener(v -> {
-                if (categoryCallback != null) {
-                    categoryCallback.categoryClicked(getItem(getAdapterPosition()),
-                            getAdapterPosition());
+                if (choosingCategorySearchCallback != null) {
+                    CurrentUser.getInstance().setCurrentCategory(getItem(getAdapterPosition()));
+                    choosingCategorySearchCallback.categoryClicked();
                 }
             });
         }

@@ -23,7 +23,7 @@ import com.example.a2ndhandapp.Controller.Fragments.MyFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SearchFragment;
 import com.example.a2ndhandapp.Controller.Fragments.SingleProductFragment;
 import com.example.a2ndhandapp.Interfaces.GoToSplashActivityCallback;
-import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
+import com.example.a2ndhandapp.Interfaces.ChoosingCategorySearchCallback;
 import com.example.a2ndhandapp.Interfaces.GetProductCallback;
 import com.example.a2ndhandapp.Models.Product;
 import com.example.a2ndhandapp.R;
@@ -71,11 +71,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param category - the category that was clicked
      * @param position - the position of the category in the list
      */
-    GetCategoryCallback categoryCallback = new GetCategoryCallback() {
+    ChoosingCategorySearchCallback choosingCategorySearchCallback = new ChoosingCategorySearchCallback() {
 
         @Override
-        public void categoryClicked(String category, int position) {
-            CurrentUser.getInstance().setCurrentCategory(category);
+        public void categoryClicked() {
             navigationView.setCheckedItem(R.id.nav_home);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, homeFragment).commit(); // Set the home fragment
             getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
@@ -109,16 +108,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         createFragments();
 
-        // Check if there is a user logged in and set the menu items accordingly
-        // Else, set the default fragment to be the "LogInOutFragment"
-        if (savedInstanceState == null && FirebaseAuth.getInstance().getCurrentUser() != null) {
-            menu.findItem(R.id.nav_home).setVisible(true);
-            menu.findItem(R.id.nav_favorites).setVisible(true);
-            menu.findItem(R.id.nav_Search).setVisible(true);
-            menu.findItem(R.id.nav_my).setVisible(true);
-            menu.findItem(R.id.nav_add).setVisible(true);
-            menu.findItem(R.id.nav_logOut).setTitle("Log Out");
-        }
+
+        // Check if there is a user logged in
         if (CurrentUser.getInstance().getUser() == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container
                     , logInOutFragment).commit(); // Set the login fragment
@@ -127,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportActionBar().setTitle(CurrentUser.getInstance().getCurrentCategory()); // Set the title of the toolbar
             navigationView.setCheckedItem(R.id.nav_home); // Set the home item as the default item
         }
-        CurrentUser.getInstance().setCurrentCategory("All");
+
     }
 
     private void initView() {
@@ -172,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         favoritesFragment.setGetProductCallback(getProductCallback);
 
         searchFragment = new SearchFragment();
-        searchFragment.setCategoryCallback(categoryCallback);
+        searchFragment.setCategoryCallback(choosingCategorySearchCallback);
 
         myFragment = new MyFragment();
         myFragment.setGetProductCallback(getProductCallback);
@@ -212,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle("My"); // Set the title of the toolbar
                 break;
             case R.id.nav_add:
-//                addFragment.resetAutoCompleteText();
                 navigationView.setCheckedItem(R.id.nav_add);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, addFragment).commit(); // Set the slideshow fragment
                 getSupportActionBar().setTitle("Add"); // Set the title of the toolbar

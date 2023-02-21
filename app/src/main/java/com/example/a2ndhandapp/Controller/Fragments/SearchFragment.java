@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a2ndhandapp.Adapters.CategoryAdapter;
-import com.example.a2ndhandapp.Interfaces.GetCategoryCallback;
+import com.example.a2ndhandapp.Interfaces.ChoosingCategorySearchCallback;
 import com.example.a2ndhandapp.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -26,9 +26,9 @@ public class SearchFragment extends Fragment {
     private ArrayList<String> categories = new ArrayList<>();
     private CategoryAdapter categoryAdapter;
 
-    private GetCategoryCallback categoryCallback;
+    private ChoosingCategorySearchCallback categoryCallback;
 
-    public void setCategoryCallback(GetCategoryCallback categoryCallback) {
+    public void setCategoryCallback(ChoosingCategorySearchCallback categoryCallback) {
         this.categoryCallback = categoryCallback;
     }
 
@@ -43,17 +43,16 @@ public class SearchFragment extends Fragment {
     }
 
     private void initCategoryRV() {
-        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
-        getCategoriesFromDB(categoriesRef);
+        getCategoriesFromDB();
 
         categoryAdapter = new CategoryAdapter(getContext(), categories);
 
         search_RV_categories.setLayoutManager(new LinearLayoutManager(getContext()));
         search_RV_categories.setAdapter(categoryAdapter);
-        categoryAdapter.setCategoryCallback(new GetCategoryCallback() {
+        categoryAdapter.setChoosingCategorySearchCallback(new ChoosingCategorySearchCallback() {
             @Override
-            public void categoryClicked(String category, int position) {
-                categoryCallback.categoryClicked(category, position);
+            public void categoryClicked() {
+                categoryCallback.categoryClicked();
             }
         });
     }
@@ -65,11 +64,10 @@ public class SearchFragment extends Fragment {
 
     /**
      * Getting the categories options from the DB
-     *
-     * @param reference
      */
-    public void getCategoriesFromDB(DatabaseReference reference) {
-        reference.get().addOnCompleteListener(task -> {
+    public void getCategoriesFromDB() {
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
+        categoriesRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
                 if (snapshot.exists()) {

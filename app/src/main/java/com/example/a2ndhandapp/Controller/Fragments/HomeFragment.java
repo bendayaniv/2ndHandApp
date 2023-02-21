@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment {
     private final ArrayList<String> sortOptions = new ArrayList<>();
     private AutoCompleteTextView home_auto_complete_text_sort;
 
-
     public void setGetProductCallback(GetProductCallback getProductCallback) {
         this.getProductCallback = getProductCallback;
     }
