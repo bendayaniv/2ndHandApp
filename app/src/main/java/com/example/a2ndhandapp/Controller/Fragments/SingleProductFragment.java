@@ -83,6 +83,7 @@ public class SingleProductFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void createProductDetails(View view) {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Uploading...");
@@ -243,7 +244,7 @@ public class SingleProductFragment extends Fragment {
     /**
      * This method is for checking if the current product is exist
      *
-     * @return
+     * @return true if the product exist, false otherwise
      */
     private boolean productExist() {
         getAllProductsFromDB();
@@ -280,6 +281,7 @@ public class SingleProductFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    allProducts.clear();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Product product = ds.getValue(Product.class);
                         if (product != null) {
