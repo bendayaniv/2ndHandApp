@@ -31,9 +31,6 @@ https://user-images.githubusercontent.com/52703125/220127448-df47bef6-0c12-4871-
 ## Product Deletion
 https://user-images.githubusercontent.com/52703125/220127509-638b6d64-df46-4d14-9817-975021c19918.mp4
 
-## Another User Deleted His Product - In Favorites and Not Favorites
-https://user-images.githubusercontent.com/52703125/220127624-f1adfad8-b126-4452-99b4-5d26430dbc71.mp4
-
 
 
 
